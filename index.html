@@ -593,8 +593,7 @@
         window.onload = function() {
             const todayStr = formatDateForInput(new Date());
             document.getElementById('tgl-pertemuan').value = todayStr;
-            document.getElementById('tgl-masuk').value = todayStr;
-
+    
             // Memanggil Database dari Google saat aplikasi pertama dibuka
             fetchDatabase();
         };
