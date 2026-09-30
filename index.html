@@ -225,13 +225,11 @@
             'tampilan': { sheet: 'Tampilan', judul: 'Pengaturan Tampilan', kolom: [], data: [] }
         };
 
-        let sortCol = '';
-        let sortAsc = true;
+        let sortCol = ''; let sortAsc = true;
 
         function getProgramList() {
             if(!dbSchema.template || !dbSchema.template.data) return [];
-            let programs = dbSchema.template.data.map(t => t.Program).filter(Boolean);
-            return [...new Set(programs)];
+            return [...new Set(dbSchema.template.data.map(t => t.Program).filter(Boolean))];
         }
 
         async function fetchDatabase() {
@@ -245,23 +243,17 @@
                     if(json.data.guru) dbSchema.guru.data = json.data.guru;
                     if(json.data.template) dbSchema.template.data = json.data.template;
                     if(json.data.akun) dbSchema.akun.data = json.data.akun;
+                    if(json.data.tampilan && json.data.tampilan.length > 0) dbSchema.tampilan.data = json.data.tampilan;
+                    else dbSchema.tampilan.data = [{ ID_Tampilan: 'UI-01', Judul_Login: 'Sistem Login', Hint_Login: 'Admin: admin/123 | Guru: guru/123', Judul_Aplikasi: 'Dashboard Manajemen Kursus', Warna_Aksen: '#3b82f6', Logo_Base64: '' }];
                     
-                    if(json.data.tampilan && json.data.tampilan.length > 0) {
-                        dbSchema.tampilan.data = json.data.tampilan;
-                    } else {
-                        dbSchema.tampilan.data = [{ ID_Tampilan: 'UI-01', Judul_Login: 'Sistem Login', Hint_Login: 'Admin: admin/123 | Guru: guru/123', Judul_Aplikasi: 'Dashboard Manajemen Kursus', Warna_Aksen: '#3b82f6', Logo_Base64: '' }];
-                    }
                     terapkanTampilanGlobal();
                 }
                 
                 document.getElementById('btn-login').innerText = "Masuk";
                 document.getElementById('btn-login').disabled = false;
                 
-                renderSettingTable('jadwal');
-                renderJadwal();
-                updateDropdownLaporan();
-                updateDropdownProgram(); 
-
+                renderSettingTable('jadwal'); renderJadwal();
+                updateDropdownLaporan(); updateDropdownProgram(); 
             } catch (e) {
                 document.getElementById('login-title-text').innerText = "Gagal Terhubung (Offline)";
                 document.getElementById('login-hint-text').innerText = "Cek koneksi internet Anda lalu refresh halaman.";
@@ -284,73 +276,53 @@
         }
 
         function terapkanTampilanGlobal() {
-            let ui = dbSchema.tampilan.data[0];
-            if(!ui) return;
-
-            document.getElementById('login-title-text').innerText = ui.Judul_Login || '';
-            document.getElementById('ui-login-title').value = ui.Judul_Login || '';
-            document.getElementById('login-hint-text').innerText = ui.Hint_Login || '';
-            document.getElementById('ui-login-hint').value = ui.Hint_Login || '';
-            document.getElementById('app-title-text').innerText = ui.Judul_Aplikasi || '';
-            document.getElementById('html-title').innerText = ui.Judul_Aplikasi || 'Sistem Manajemen Kursus';
+            let ui = dbSchema.tampilan.data[0]; if(!ui) return;
+            document.getElementById('login-title-text').innerText = ui.Judul_Login || ''; document.getElementById('ui-login-title').value = ui.Judul_Login || '';
+            document.getElementById('login-hint-text').innerText = ui.Hint_Login || ''; document.getElementById('ui-login-hint').value = ui.Hint_Login || '';
+            document.getElementById('app-title-text').innerText = ui.Judul_Aplikasi || ''; document.getElementById('html-title').innerText = ui.Judul_Aplikasi || 'Sistem Manajemen Kursus';
             document.getElementById('ui-app-title').value = ui.Judul_Aplikasi || '';
-            document.documentElement.style.setProperty('--accent', ui.Warna_Aksen || '#3b82f6');
-            document.getElementById('color-picker').value = ui.Warna_Aksen || '#3b82f6';
-
+            document.documentElement.style.setProperty('--accent', ui.Warna_Aksen || '#3b82f6'); document.getElementById('color-picker').value = ui.Warna_Aksen || '#3b82f6';
             if(ui.Logo_Base64) {
                 document.querySelectorAll('.app-logo-img').forEach(logo => { logo.src = ui.Logo_Base64; logo.style.display = 'block'; });
-                document.getElementById('ui-logo-preview').src = ui.Logo_Base64;
-                document.getElementById('ui-logo-preview').style.display = 'block';
+                document.getElementById('ui-logo-preview').src = ui.Logo_Base64; document.getElementById('ui-logo-preview').style.display = 'block';
             }
         }
 
         function kompresGambar(base64Str, maxHeight, callback) {
-            let img = new Image();
-            img.src = base64Str;
+            let img = new Image(); img.src = base64Str;
             img.onload = function() {
                 if(img.height <= maxHeight) { callback(base64Str); return; } 
-                let canvas = document.createElement('canvas');
-                let ratio = maxHeight / img.height;
-                canvas.height = maxHeight;
-                canvas.width = img.width * ratio;
-                let ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                let canvas = document.createElement('canvas'); let ratio = maxHeight / img.height;
+                canvas.height = maxHeight; canvas.width = img.width * ratio;
+                let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 callback(canvas.toDataURL('image/jpeg', 0.8)); 
             };
         }
 
         function simpanTampilanGlobal() {
             let ui = dbSchema.tampilan.data[0] || { ID_Tampilan: 'UI-01' };
-            ui.Judul_Login = document.getElementById('ui-login-title').value;
-            ui.Hint_Login = document.getElementById('ui-login-hint').value;
-            ui.Judul_Aplikasi = document.getElementById('ui-app-title').value;
-            ui.Warna_Aksen = document.getElementById('color-picker').value;
+            ui.Judul_Login = document.getElementById('ui-login-title').value; ui.Hint_Login = document.getElementById('ui-login-hint').value;
+            ui.Judul_Aplikasi = document.getElementById('ui-app-title').value; ui.Warna_Aksen = document.getElementById('color-picker').value;
 
             const fileInput = document.getElementById('ui-app-logo');
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     kompresGambar(e.target.result, 150, function(resizedBase64) {
-                        ui.Logo_Base64 = resizedBase64;
-                        dbSchema.tampilan.data[0] = ui;
-                        terapkanTampilanGlobal(); syncToGoogleSheets('tampilan');
-                        alert('Tampilan Global Diperbarui!');
+                        ui.Logo_Base64 = resizedBase64; dbSchema.tampilan.data[0] = ui;
+                        terapkanTampilanGlobal(); syncToGoogleSheets('tampilan'); alert('Tampilan Global Diperbarui!');
                     });
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                dbSchema.tampilan.data[0] = ui;
-                terapkanTampilanGlobal(); syncToGoogleSheets('tampilan');
-                alert('Tampilan Global Diperbarui!');
+                dbSchema.tampilan.data[0] = ui; terapkanTampilanGlobal(); syncToGoogleSheets('tampilan'); alert('Tampilan Global Diperbarui!');
             }
         }
 
         let currentUserRole = ''; 
         function handleLogin() {
-            const user = document.getElementById('login-user').value;
-            const pass = document.getElementById('login-pass').value;
+            const user = document.getElementById('login-user').value; const pass = document.getElementById('login-pass').value;
             const err = document.getElementById('login-error');
-
             let validUser = dbSchema.akun.data.find(u => u.Username === user && String(u.Password) === pass);
             if(validUser) loginSuccess(validUser.Role);
             else if (user === 'admin' && pass === '123') loginSuccess('admin');
@@ -359,43 +331,27 @@
 
         function loginSuccess(role) {
             currentUserRole = role.toLowerCase();
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-content').style.display = 'block';
-            
-            const navSiswa = document.getElementById('nav-siswa');
-            const navPengaturan = document.getElementById('nav-pengaturan');
-            const userDisplay = document.getElementById('user-display');
-
+            document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-content').style.display = 'block';
+            const navSiswa = document.getElementById('nav-siswa'); const navPengaturan = document.getElementById('nav-pengaturan'); const userDisplay = document.getElementById('user-display');
             if(currentUserRole === 'guru') {
-                navSiswa.style.display = 'none'; navPengaturan.style.display = 'none';
-                userDisplay.innerHTML = '👨‍‍🏫 Guru'; openTab('jadwal');
+                navSiswa.style.display = 'none'; navPengaturan.style.display = 'none'; userDisplay.innerHTML = '👨‍‍🏫 Guru'; openTab('jadwal');
             } else {
-                navSiswa.style.display = 'inline-block'; navPengaturan.style.display = 'inline-block';
-                userDisplay.innerHTML = '👨‍💻 Admin';
+                navSiswa.style.display = 'inline-block'; navPengaturan.style.display = 'inline-block'; userDisplay.innerHTML = '👨‍💻 Admin';
             }
             renderJadwal();
         }
 
         function handleLogout() {
             currentUserRole = '';
-            document.getElementById('login-user').value = ''; document.getElementById('login-pass').value = '';
-            document.getElementById('login-error').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('app-content').style.display = 'none';
+            document.getElementById('login-user').value = ''; document.getElementById('login-pass').value = ''; document.getElementById('login-error').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app-content').style.display = 'none';
         }
 
-        let activeSettingMenu = 'jadwal';
-        let editIndex = -1;
+        let activeSettingMenu = 'jadwal'; let editIndex = -1;
 
         function switchSettings(menu, btnElement) {
-            document.querySelectorAll('.settings-sidebar button').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            
-            const dataView = document.getElementById('setting-data-view');
-            const uiView = document.getElementById('setting-ui-view');
-            const controls = document.getElementById('setting-controls');
-
-            // Hapus isi pencarian saat pindah tab
+            document.querySelectorAll('.settings-sidebar button').forEach(b => b.classList.remove('active')); btnElement.classList.add('active');
+            const dataView = document.getElementById('setting-data-view'); const uiView = document.getElementById('setting-ui-view'); const controls = document.getElementById('setting-controls');
             document.getElementById('search-input').value = '';
 
             if (menu === 'tampilan') {
@@ -408,31 +364,20 @@
             }
         }
 
-        // FUNGSI PENCARIAN (FILTERING)
         function filterTable() {
             let input = document.getElementById("search-input").value.toLowerCase();
             let table = document.getElementById("setting-table");
             let tr = table.getElementsByTagName("tr");
-
-            // Mulai dari i=1 agar tidak menyembunyikan header tabel
             for (let i = 1; i < tr.length; i++) {
                 let tdArray = tr[i].getElementsByTagName("td");
                 let matchFound = false;
-                
-                // Cari kecocokan teks di semua kolom kecuali kolom Aksi (terakhir)
                 for (let j = 0; j < tdArray.length - 1; j++) {
-                    if (tdArray[j]) {
-                        if (tdArray[j].innerText.toLowerCase().indexOf(input) > -1) {
-                            matchFound = true;
-                            break;
-                        }
-                    }
+                    if (tdArray[j] && tdArray[j].innerText.toLowerCase().indexOf(input) > -1) { matchFound = true; break; }
                 }
                 tr[i].style.display = matchFound ? "" : "none";
             }
         }
 
-        // FUNGSI SORTING (PENGURUTAN KLIK HEADER)
         function sortTable(key) {
             if (sortCol === key) sortAsc = !sortAsc; 
             else { sortCol = key; sortAsc = true; }
@@ -440,20 +385,13 @@
             dbSchema[activeSettingMenu].data.sort((a, b) => {
                 let valA = a[key] ? String(a[key]).toLowerCase() : '';
                 let valB = b[key] ? String(b[key]).toLowerCase() : '';
-
-                if(!isNaN(Date.parse(valA)) && !isNaN(Date.parse(valB))) {
-                    valA = new Date(valA).getTime(); valB = new Date(valB).getTime();
-                } else if (!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') {
-                    valA = parseFloat(valA); valB = parseFloat(valB);
-                }
-
+                if(!isNaN(Date.parse(valA)) && !isNaN(Date.parse(valB))) { valA = new Date(valA).getTime(); valB = new Date(valB).getTime(); } 
+                else if (!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') { valA = parseFloat(valA); valB = parseFloat(valB); }
                 if (valA < valB) return sortAsc ? -1 : 1;
                 if (valA > valB) return sortAsc ? 1 : -1;
                 return 0;
             });
-            renderSettingTable();
-            // Terapkan ulang pencarian jika ada teks yang sedang dicari
-            filterTable();
+            renderSettingTable(); filterTable();
         }
 
         function renderSettingTable(menu) {
@@ -461,9 +399,7 @@
             const schema = dbSchema[activeSettingMenu];
             document.getElementById('setting-title').innerText = schema.judul;
             
-            let html = '<thead><tr>';
-            let visibleCols = schema.kolom.slice(0, 5);
-            
+            let html = '<thead><tr>'; let visibleCols = schema.kolom.slice(0, 5);
             visibleCols.forEach(k => {
                 let icon = '';
                 if(sortCol === k.key) { icon = sortAsc ? ' <small style="color:var(--accent);">▲</small>' : ' <small style="color:var(--accent);">▼</small>'; }
@@ -474,11 +410,8 @@
             schema.data.forEach((row, index) => {
                 html += '<tr>';
                 visibleCols.forEach(k => html += `<td>${row[k.key] || ''}</td>`);
-                
                 let btnDetail = '';
-                if(activeSettingMenu === 'murid') {
-                    btnDetail = `<button class="btn-secondary" onclick="viewDetail(${index})" style="padding: 4px 8px; font-size: 11px; color: var(--success); border-color: var(--success);">Detail</button>`;
-                }
+                if(activeSettingMenu === 'murid') { btnDetail = `<button class="btn-secondary" onclick="viewDetail(${index})" style="padding: 4px 8px; font-size: 11px; color: var(--success); border-color: var(--success);">Detail</button>`; }
 
                 html += `
                     <td class="action-btns">
@@ -487,73 +420,54 @@
                         <button class="btn-danger" onclick="deleteCrudData(${index})">Hapus</button>
                     </td></tr>`;
             });
-            html += '</tbody>';
-            document.getElementById('setting-table').innerHTML = html;
+            html += '</tbody>'; document.getElementById('setting-table').innerHTML = html;
         }
 
         function viewDetail(index) {
-            const schema = dbSchema[activeSettingMenu];
-            const data = schema.data[index];
-            const modalBody = document.getElementById('modal-body');
-            
+            const schema = dbSchema[activeSettingMenu]; const data = schema.data[index]; const modalBody = document.getElementById('modal-body');
             document.getElementById('modal-title').innerText = `Detail: ${data.Nama || 'Data Siswa'}`;
             
             let html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:10px;">';
-            schema.kolom.forEach(k => {
-                html += `<div><small style="color:var(--text-muted);">${k.label}</small><br><strong style="font-size:14px; word-break: break-all;">${data[k.key] || '-'}</strong></div>`;
-            });
+            schema.kolom.forEach(k => { html += `<div><small style="color:var(--text-muted);">${k.label}</small><br><strong style="font-size:14px; word-break: break-all;">${data[k.key] || '-'}</strong></div>`; });
             html += '</div>';
             
-            modalBody.innerHTML = html;
-            document.getElementById('btn-modal-save').style.display = 'none'; 
-            document.getElementById('crud-modal').style.display = 'flex';
+            modalBody.innerHTML = html; document.getElementById('btn-modal-save').style.display = 'none'; document.getElementById('crud-modal').style.display = 'flex';
         }
 
         function openCrudModal(mode, index = -1) {
-            const schema = dbSchema[activeSettingMenu];
-            const modalBody = document.getElementById('modal-body');
-            modalBody.innerHTML = ''; 
-            editIndex = index;
+            const schema = dbSchema[activeSettingMenu]; const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = ''; editIndex = index;
             document.getElementById('modal-title').innerText = mode === 'add' ? `Tambah ${schema.judul}` : `Edit ${schema.judul}`;
 
             schema.kolom.forEach(k => {
                 let defaultValue = mode === 'edit' ? (schema.data[index][k.key] || '') : '';
                 let inputHTML = '';
-
                 if(k.type === 'select') {
-                    inputHTML = `<select id="input-${k.key}">`;
-                    let optionsData = [];
+                    inputHTML = `<select id="input-${k.key}">`; let optionsData = [];
                     if(k.source === 'murid') optionsData = dbSchema.murid.data.map(m => m.Nama);
                     else if(k.source === 'guru') optionsData = dbSchema.guru.data.map(g => g.Nama_Guru);
                     else if(k.source === 'program') optionsData = getProgramList(); 
-
                     optionsData.forEach(opt => {
                         let isSelected = (defaultValue === opt) ? 'selected' : '';
                         inputHTML += `<option value="${opt}" ${isSelected}>${opt}</option>`;
                     });
                     inputHTML += `</select>`;
-                } else {
-                    inputHTML = `<input type="${k.type}" id="input-${k.key}" value="${defaultValue}">`;
-                }
+                } else { inputHTML = `<input type="${k.type}" id="input-${k.key}" value="${defaultValue}">`; }
                 modalBody.innerHTML += `<div class="form-group"><label>${k.label}</label>${inputHTML}</div>`;
             });
-            
-            document.getElementById('btn-modal-save').style.display = 'inline-block'; 
-            document.getElementById('crud-modal').style.display = 'flex';
+            document.getElementById('btn-modal-save').style.display = 'inline-block'; document.getElementById('crud-modal').style.display = 'flex';
         }
 
         function closeCrudModal() { document.getElementById('crud-modal').style.display = 'none'; }
 
         function saveCrudData() {
-            const schema = dbSchema[activeSettingMenu];
-            let newData = {};
+            const schema = dbSchema[activeSettingMenu]; let newData = {};
             schema.kolom.forEach(k => { newData[k.key] = document.getElementById(`input-${k.key}`).value; });
 
             if(editIndex === -1) schema.data.push(newData);
             else schema.data[editIndex] = newData;
 
             closeCrudModal(); renderSettingTable(); syncToGoogleSheets(activeSettingMenu);
-
             if(activeSettingMenu === 'jadwal' || activeSettingMenu === 'murid') { renderJadwal(); updateDropdownLaporan(); }
             if(activeSettingMenu === 'template') { updateDropdownProgram(); }
         }
@@ -570,7 +484,6 @@
         function simpanRegistrasiSiswa() {
             let nama = document.getElementById('reg-nama').value;
             if(!nama) return alert("Nama Lengkap wajib diisi!");
-
             let newId = 'M-00' + (dbSchema.murid.data.length + 1);
 
             dbSchema.murid.data.push({
@@ -581,9 +494,7 @@
                 Hari_Default: document.getElementById('reg-hari').value, Jam_Mulai: document.getElementById('reg-jam-mulai').value,
                 Jam_Selesai: document.getElementById('reg-jam-selesai').value
             });
-
-            alert(`Berhasil! Data siswa ${nama} telah disimpan.`);
-            syncToGoogleSheets('murid'); 
+            alert(`Berhasil! Data siswa ${nama} telah disimpan.`); syncToGoogleSheets('murid'); 
 
             document.getElementById('reg-nama').value = ''; document.getElementById('reg-sekolah').value = '';
             document.getElementById('reg-usia').value = ''; document.getElementById('reg-ortu').value = '';
@@ -592,17 +503,11 @@
 
         function updateDropdownProgram() {
             const selectReg = document.getElementById('reg-program');
-            if(selectReg) {
-                selectReg.innerHTML = '';
-                getProgramList().forEach(p => { selectReg.innerHTML += `<option value="${p}">${p}</option>`; });
-            }
+            if(selectReg) { selectReg.innerHTML = ''; getProgramList().forEach(p => { selectReg.innerHTML += `<option value="${p}">${p}</option>`; }); }
         }
 
         function checkStatus(dateStr, startStr, endStr) {
-            const now = new Date();
-            const startDT = new Date(`${dateStr}T${startStr}:00`);
-            const endDT = new Date(`${dateStr}T${endStr}:00`);
-            
+            const now = new Date(); const startDT = new Date(`${dateStr}T${startStr}:00`); const endDT = new Date(`${dateStr}T${endStr}:00`);
             if(isNaN(startDT.getTime())) return { label: 'Terjadwal', css: 'status-berlangsung' };
             if (now > endDT) return { label: 'Selesai', css: 'status-selesai' };
             if (now >= startDT && now <= endDT) return { label: 'Berlangsung', css: 'status-berlangsung' };
@@ -633,24 +538,15 @@
         }
 
         function updateTemplateBtn() {
-            const idJadwal = document.getElementById('select-siswa').value;
-            const btn = document.getElementById('btn-template');
-            
-            if(!idJadwal) {
-                btn.innerText = 'Download Template Laporan';
-                btn.onclick = () => alert('Pilih Jadwal Siswa terlebih dahulu!');
-                return;
-            }
-
+            const idJadwal = document.getElementById('select-siswa').value; const btn = document.getElementById('btn-template');
+            if(!idJadwal) { btn.innerText = 'Download Template Laporan'; btn.onclick = () => alert('Pilih Jadwal Siswa terlebih dahulu!'); return; }
             let jadwal = dbSchema.jadwal.data.find(j => j.ID_Jadwal === idJadwal);
             if(jadwal && jadwal.Program) {
                 let template = dbSchema.template.data.find(t => t.Program === jadwal.Program);
                 if(template && template.Tautan_GDoc) {
-                    btn.innerText = `⬇️ Download Template ${jadwal.Program}`;
-                    btn.onclick = () => window.open(template.Tautan_GDoc, '_blank');
+                    btn.innerText = `⬇️ Download Template ${jadwal.Program}`; btn.onclick = () => window.open(template.Tautan_GDoc, '_blank');
                 } else {
-                    btn.innerText = `Template ${jadwal.Program} Belum Tersedia`;
-                    btn.onclick = () => alert('Admin belum menambahkan link template untuk program ini di Pengaturan Data.');
+                    btn.innerText = `Template ${jadwal.Program} Belum Tersedia`; btn.onclick = () => alert('Admin belum menambahkan link template untuk program ini di Pengaturan Data.');
                 }
             }
         }
@@ -664,12 +560,21 @@
         }
 
         async function kirimLaporan() {
+            let idJadwal = document.getElementById('select-siswa').value;
+            if(!idJadwal) return alert("Pilih Jadwal Siswa terlebih dahulu!");
+
             let btn = document.getElementById('btn-kirim-laporan');
-            btn.innerText = "Mengunggah Laporan... (Mohon Tunggu)"; btn.disabled = true;
+            btn.innerText = "Membuat Folder & Mengunggah... (Mohon Tunggu)"; btn.disabled = true;
             try {
+                let jadwalTerpilih = dbSchema.jadwal.data.find(j => j.ID_Jadwal === idJadwal);
+                let namaSiswa = jadwalTerpilih ? jadwalTerpilih.Siswa : "Tanpa Nama";
+
                 let payload = {
-                    tanggal: document.getElementById('tgl-pertemuan').value, jadwal_siswa: document.getElementById('select-siswa').value,
-                    kehadiran: document.getElementById('select-kehadiran').value, catatan: document.getElementById('catatan-guru').value,
+                    tanggal: document.getElementById('tgl-pertemuan').value, 
+                    jadwal_siswa: idJadwal, 
+                    nama_siswa: namaSiswa, // Mengirim nama siswa untuk pembuatan judul folder
+                    kehadiran: document.getElementById('select-kehadiran').value, 
+                    catatan: document.getElementById('catatan-guru').value,
                     fileLaporan: null, fileMedia: []
                 };
                 let fileLap = document.getElementById('file-laporan').files[0];
@@ -691,25 +596,20 @@
         window.onload = function() {
             const todayStr = formatDateForInput(new Date());
             document.getElementById('tgl-pertemuan').value = todayStr; document.getElementById('reg-tgl-masuk').value = todayStr;
-            
             const themeMode = localStorage.getItem('themeMode') || 'dark';
-            document.documentElement.setAttribute('data-theme', themeMode);
-            document.getElementById('bg-theme').value = themeMode;
-
+            document.documentElement.setAttribute('data-theme', themeMode); document.getElementById('bg-theme').value = themeMode;
             fetchDatabase();
         };
 
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active');
         }
         function toggleThemePanel() { document.getElementById('theme-panel').classList.toggle('active'); }
         function changeBackgroundMode() { 
             const mode = document.getElementById('bg-theme').value;
-            document.documentElement.setAttribute('data-theme', mode);
-            localStorage.setItem('themeMode', mode); 
+            document.documentElement.setAttribute('data-theme', mode); localStorage.setItem('themeMode', mode); 
         }
         function changeAccentColor() { document.documentElement.style.setProperty('--accent', document.getElementById('color-picker').value); }
     </script>
