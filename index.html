@@ -5,30 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="html-title">Sistem Manajemen Kursus - Pro UI</title>
     <style>
-        /* CSS Tema Gelap & Variabel Tema */
         :root {
-            --bg-main: #121212;
-            --bg-card: #1e1e1e;
-            --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            --accent: #3b82f6;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --border: #333333;
+            --bg-main: #121212; --bg-card: #1e1e1e; --text-main: #ffffff; --text-muted: #aaaaaa;
+            --accent: #3b82f6; --danger: #ef4444; --success: #10b981; --warning: #f59e0b; --border: #333333;
         }
-
         [data-theme="light"] {
-            --bg-main: #f3f4f6;
-            --bg-card: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --border: #e5e7eb;
+            --bg-main: #f3f4f6; --bg-card: #ffffff; --text-main: #1f2937; --text-muted: #6b7280; --border: #e5e7eb;
         }
-
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 20px; transition: background-color 0.3s, color 0.3s; }
         
-        /* HEADER & KONTROL ATAS */
         .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .app-header-left { display: flex; align-items: center; gap: 15px; }
         .app-logo-img { max-height: 40px; border-radius: 4px; display: none; }
@@ -36,18 +21,15 @@
         .top-controls { display: flex; gap: 15px; align-items: center; position: relative; }
         .user-info { font-weight: bold; padding: 8px; border-radius: 4px; background-color: var(--bg-card); border: 1px solid var(--border); }
 
-        /* Panel Pengaturan Tema Melayang */
         .theme-panel { display: none; position: absolute; right: 0; top: 50px; background-color: var(--bg-card); padding: 15px; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 100; min-width: 200px; }
         .theme-panel.active { display: flex; flex-direction: column; gap: 10px; }
 
-        /* Navigasi Tab Utama */
         .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab-btn { background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 10px 20px; border-radius: 4px; transition: 0.3s; }
         .tab-btn.active, .tab-btn:hover { color: var(--text-main); background-color: var(--bg-card); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* ====== TAMPILAN JADWAL ====== */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
         .card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted); }
@@ -60,14 +42,13 @@
         .card-date { font-size: 13px; font-weight: bold; margin-top: 5px; }
         .card-footer { display: flex; justify-content: space-between; margin-top: 5px; font-size: 13px; color: var(--text-muted); }
 
-        /* ====== FORMULIR UMUM ====== */
         .form-container { background-color: var(--bg-card); padding: 25px; border-radius: 8px; max-width: 800px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
         .form-group.full { grid-column: span 2; }
         label { font-size: 13px; color: var(--text-muted); }
         input, select, textarea { background-color: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 4px; font-family: inherit; }
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
         input[type="color"] { padding: 2px; height: 35px; width: 50px; cursor: pointer; }
         .time-group { display: flex; gap: 10px; align-items: center; }
 
@@ -78,7 +59,6 @@
         .btn-secondary { background-color: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 4px; cursor: pointer; }
         .btn-danger { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
         
-        /* ====== TABEL PENGATURAN ====== */
         .settings-layout { display: flex; gap: 20px; }
         .settings-sidebar { min-width: 220px; display: flex; flex-direction: column; gap: 5px; }
         .settings-sidebar button { background: none; border: none; color: var(--text-muted); text-align: left; padding: 10px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
@@ -88,45 +68,36 @@
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
         th { color: var(--text-muted); font-weight: normal; }
         .action-btns { display: flex; gap: 8px; }
-        a { color: var(--accent); text-decoration: none; }
         
-        /* ====== LAYAR LOGIN ====== */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-main); display: flex; justify-content: center; align-items: center; z-index: 1000; }
         .login-box { background-color: var(--bg-card); padding: 30px; border-radius: 8px; width: 320px; text-align: center; border: 1px solid var(--border); }
         #app-content { display: none; }
 
-        /* ====== MODAL (POPUP FORM CRUD) ====== */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 2000; }
         .modal-content { background-color: var(--bg-card); padding: 25px; border-radius: 8px; width: 400px; border: 1px solid var(--border); }
         .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--accent); }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-
     </style>
 </head>
 <body>
 
-    <!-- LAYAR LOGIN -->
     <div id="login-screen">
         <div class="login-box">
             <img class="app-logo-img" src="" alt="Logo" style="margin: 0 auto 15px auto; max-height: 60px;">
-            <h2 id="login-title-text" style="margin-top: 0;">Menghubungkan ke Database...</h2>
+            <h2 id="login-title-text" style="margin-top: 0;">Menghubungkan Database...</h2>
             <p id="login-hint-text" style="font-size: 12px; color: var(--text-muted);">Mohon tunggu sebentar.</p>
             <div class="form-group" style="text-align: left;">
-                <label>Username</label>
-                <input type="text" id="login-user" placeholder="Masukkan username">
+                <label>Username</label><input type="text" id="login-user" placeholder="Masukkan username">
             </div>
             <div class="form-group" style="text-align: left;">
-                <label>Password</label>
-                <input type="password" id="login-pass" placeholder="Masukkan password">
+                <label>Password</label><input type="password" id="login-pass" placeholder="Masukkan password">
             </div>
             <button class="btn-primary" id="btn-login" style="width: 100%; margin-top: 10px;" onclick="handleLogin()" disabled>Memuat...</button>
             <p id="login-error" style="color: var(--danger); font-size: 12px; display: none;">Username atau Password salah!</p>
         </div>
     </div>
 
-    <!-- KONTEN APLIKASI UTAMA -->
     <div id="app-content">
-        <!-- HEADER -->
         <div class="header-container">
             <div class="app-header-left">
                 <img class="app-logo-img" src="" alt="Logo">
@@ -135,19 +106,9 @@
             <div class="top-controls">
                 <div class="user-info" id="user-display">👨‍💻 Admin</div>
                 <button class="btn-secondary" onclick="toggleThemePanel()">⚙️ Tema & Akun</button>
-                
                 <div class="theme-panel" id="theme-panel">
-                    <div class="form-group">
-                        <label>Mode Tampilan</label>
-                        <select id="bg-theme" onchange="changeBackgroundMode()">
-                            <option value="dark">Gelap (Dark)</option>
-                            <option value="light">Terang (Light)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Warna Aksen</label>
-                        <input type="color" id="color-picker" value="#3b82f6" onchange="changeAccentColor()">
-                    </div>
+                    <div class="form-group"><label>Mode Tampilan</label><select id="bg-theme" onchange="changeBackgroundMode()"><option value="dark">Gelap (Dark)</option><option value="light">Terang (Light)</option></select></div>
+                    <div class="form-group"><label>Warna Aksen</label><input type="color" id="color-picker" value="#3b82f6" onchange="changeAccentColor()"></div>
                     <hr style="border-color: var(--border); margin: 10px 0;">
                     <button class="btn-danger" style="width: 100%;" onclick="handleLogout()">Keluar (Logout)</button>
                 </div>
@@ -161,56 +122,40 @@
             <button class="tab-btn" id="nav-pengaturan" onclick="openTab('pengaturan')">⚙️ Pengaturan Data</button>
         </div>
 
-        <!-- TAB 1: JADWAL -->
-        <div id="jadwal" class="tab-content active">
-            <div class="grid-container" id="jadwal-container"></div>
-        </div>
+        <div id="jadwal" class="tab-content active"><div class="grid-container" id="jadwal-container"></div></div>
 
-        <!-- TAB 2: KIRIM LAPORAN -->
         <div id="laporan" class="tab-content">
             <div class="form-container">
                 <h3 style="margin-top: 0;">Formulir Laporan Evaluasi</h3>
                 <div class="form-grid">
-                    <div class="form-group full">
-                        <label>Pilih Jadwal Siswa</label>
-                        <select id="select-siswa">
-                            <option value="">-- Menunggu Data Jadwal --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tanggal Pertemuan</label>
-                        <input type="date" id="tgl-pertemuan">
-                    </div>
-                    <div class="form-group">
-                        <label>Kehadiran</label>
-                        <select id="select-kehadiran"><option>Hadir</option><option>Izin</option><option>Sakit</option><option>Alpha</option></select>
-                    </div>
-                    <div class="form-group full">
-                        <label>Unggah Hasil Evaluasi (Dokumen/PDF)</label>
-                        <input type="file" id="file-laporan" accept=".pdf,.doc,.docx">
-                    </div>
-                    <div class="form-group full">
-                        <label>Unggah Dokumentasi (Foto/Video)</label>
-                        <input type="file" id="file-media" multiple accept="image/*,video/*">
-                    </div>
-                    <div class="form-group full">
-                        <label>Catatan Guru</label>
-                        <textarea id="catatan-guru" rows="3" placeholder="Ketik ringkasan kelas hari ini..."></textarea>
-                    </div>
+                    <div class="form-group full"><label>Pilih Jadwal Siswa</label><select id="select-siswa"><option value="">-- Menunggu Data --</option></select></div>
+                    <div class="form-group"><label>Tanggal Pertemuan</label><input type="date" id="tgl-pertemuan"></div>
+                    <div class="form-group"><label>Kehadiran</label><select id="select-kehadiran"><option>Hadir</option><option>Izin</option><option>Sakit</option><option>Alpha</option></select></div>
+                    <div class="form-group full"><label>Unggah Hasil Evaluasi (Dokumen)</label><input type="file" id="file-laporan" accept=".pdf,.doc,.docx"></div>
+                    <div class="form-group full"><label>Unggah Dokumentasi (Foto/Video)</label><input type="file" id="file-media" multiple accept="image/*,video/*"></div>
+                    <div class="form-group full"><label>Catatan Guru</label><textarea id="catatan-guru" rows="3" placeholder="Ketik ringkasan kelas hari ini..."></textarea></div>
                 </div>
                 <button class="btn-primary" id="btn-kirim-laporan" style="margin-top: 10px;" onclick="kirimLaporan()">Simpan & Kirim Laporan</button>
             </div>
         </div>
 
-        <!-- TAB 3: REGISTRASI SISWA BARU -->
         <div id="siswa" class="tab-content">
             <div class="form-container">
                 <h3 style="margin-top: 0;">Data Profil Siswa Lengkap</h3>
-                <p style="color:var(--text-muted); font-size:13px;">Gunakan menu "Pengaturan Data -> Kelola Data Murid" untuk saat ini. Fitur form terpisah sedang dalam pengembangan lebih lanjut.</p>
+                <div class="form-grid">
+                    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="reg-nama" placeholder="Contoh: Anisa Rahma"></div>
+                    <div class="form-group"><label>Asal Sekolah</label><input type="text" id="reg-sekolah" placeholder="Contoh: SMPN 1"></div>
+                    <div class="form-group"><label>Usia (Tahun)</label><input type="number" id="reg-usia" placeholder="14"></div>
+                    <div class="form-group"><label>Program Kursus</label><select id="reg-program"><option>Matematika - Dasar</option><option>Inggris - Menengah</option><option>Fisika - Lanjut</option></select></div>
+                    <div class="form-group"><label>Nama Orang Tua</label><input type="text" id="reg-ortu"></div>
+                    <div class="form-group"><label>Tanggal Masuk</label><input type="date" id="reg-tgl-masuk"></div>
+                    <div class="form-group"><label>Nomor Kontak Siswa (WA)</label><input type="tel" id="reg-wa-siswa"></div>
+                    <div class="form-group"><label>Nomor Kontak Orang Tua</label><input type="tel" id="reg-wa-ortu"></div>
+                </div>
+                <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="simpanRegistrasiSiswa()">Simpan Data Siswa</button>
             </div>
         </div>
 
-        <!-- TAB 4: PENGATURAN -->
         <div id="pengaturan" class="tab-content">
             <div class="settings-layout">
                 <div class="settings-sidebar">
@@ -225,38 +170,23 @@
                 <div class="settings-content">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <h3 id="setting-title" style="margin: 0;">Kelola Jadwal</h3>
-                        <button class="btn-primary" id="btn-tambah-data" style="padding: 6px 12px; font-size: 13px;" onclick="openCrudModal('add')">+ Tambah Data</button>
-                        <span id="sync-status" style="font-size:12px; color:var(--success); display:none;">Menyimpan ke Google Sheets... ⏳</span>
+                        <div>
+                            <span id="sync-status" style="font-size:12px; color:var(--success); display:none; margin-right:10px;">Menyimpan... ⏳</span>
+                            <button class="btn-primary" id="btn-tambah-data" style="padding: 6px 12px; font-size: 13px;" onclick="openCrudModal('add')">+ Tambah Data</button>
+                        </div>
                     </div>
-                    
-                    <div id="setting-data-view">
-                        <table id="setting-table"></table>
-                    </div>
+                    <div id="setting-data-view"><table id="setting-table"></table></div>
 
                     <div id="setting-ui-view" style="display: none;">
-                        <div class="form-group">
-                            <label>Judul Layar Login (Teks Utama)</label>
-                            <input type="text" id="ui-login-title" placeholder="Contoh: Sistem Login">
-                        </div>
-                        <div class="form-group">
-                            <label>Teks Bantuan Login (Hint)</label>
-                            <input type="text" id="ui-login-hint" placeholder="Contoh: Admin: admin/123 | Guru: guru/123">
-                        </div>
-                        <div class="form-group">
-                            <label>Judul Dashboard (Teks di Pojok Kiri Atas)</label>
-                            <input type="text" id="ui-app-title" placeholder="Contoh: Dashboard Manajemen Kursus">
-                        </div>
-                        <div class="form-group">
-                            <label>Unggah Gambar / Logo Aplikasi</label>
-                            <input type="file" id="ui-app-logo" accept="image/*">
-                            <img id="ui-logo-preview" style="max-height: 50px; margin-top: 10px; display: none; border-radius: 4px;">
-                        </div>
-                        <button class="btn-primary" style="margin-top: 15px;" onclick="simpanTampilanUI()">Simpan Tampilan (Lokal)</button>
+                        <div class="form-group"><label>Judul Layar Login</label><input type="text" id="ui-login-title"></div>
+                        <div class="form-group"><label>Teks Bantuan Login (Hint)</label><input type="text" id="ui-login-hint"></div>
+                        <div class="form-group"><label>Judul Dashboard (Kiri Atas)</label><input type="text" id="ui-app-title"></div>
+                        <div class="form-group"><label>Unggah Logo</label><input type="file" id="ui-app-logo" accept="image/*"><img id="ui-logo-preview" style="max-height: 50px; margin-top: 10px; display: none; border-radius: 4px;"></div>
+                        <button class="btn-primary" style="margin-top: 15px;" onclick="simpanTampilanUI()">Simpan Perubahan Tampilan</button>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <!-- MODAL CRUD -->
@@ -273,23 +203,22 @@
 
     <script>
         // ==========================================
-        // URL API GOOGLE APPS SCRIPT ANDA
+        // 1. KONEKSI GOOGLE APPS SCRIPT
         // ==========================================
         const API_URL = "https://script.google.com/macros/s/AKfycbxhCQiLp4s4vmGzaUDWsoTqtYtRZcrD5KCp445kwJx5bOLPEDcEbFbJ62IJLH9KKunZOQ/exec";
 
-        // ==========================================
-        // DATABASE LOKAL (DISINKRONKAN DENGAN GOOGLE SHEETS)
-        // Header (key) disamakan persis dengan baris 1 di Google Sheets
-        // ==========================================
+        const listProgram = ['Matematika - Dasar', 'Inggris - Menengah', 'Fisika - Lanjut', 'Biologi - Menengah'];
+
+        // SKEMA DATABASE (KEY HARUS PERSIS SAMA DENGAN HEADER GOOGLE SHEETS)
         let dbSchema = {
-            'jadwal': { sheet: 'Jadwal', judul: 'Kelola Jadwal', kolom: [{key: 'ID_Jadwal', label: 'ID Jadwal'}, {key: 'Siswa', label: 'Siswa'}, {key: 'Hari_Jam', label: 'Hari, Jam'}, {key: 'Guru', label: 'Guru'}], data: [] },
-            'murid': { sheet: 'Murid', judul: 'Kelola Data Murid', kolom: [{key: 'ID_Murid', label: 'ID Murid'}, {key: 'Nama', label: 'Nama Lengkap'}, {key: 'Asal_Sekolah', label: 'Asal Sekolah'}, {key: 'Program', label: 'Program Kursus'}], data: [] },
-            'guru': { sheet: 'Guru', judul: 'Kelola Data Guru', kolom: [{key: 'ID_Guru', label: 'ID Guru'}, {key: 'Nama_Guru', label: 'Nama Guru'}, {key: 'Spesialisasi', label: 'Spesialisasi'}], data: [] },
-            'template': { sheet: 'Template', judul: 'Kelola Template Laporan', kolom: [{key: 'Program', label: 'Program'}, {key: 'Level', label: 'Level'}, {key: 'Tautan_GDoc', label: 'Tautan G-Doc'}], data: [] },
-            'akun': { sheet: 'Akun', judul: 'Pengaturan Akun Akses', kolom: [{key: 'Username', label: 'Username'}, {key: 'Password', label: 'Password'}, {key: 'Role', label: 'Role (admin/guru)'}], data: [] }
+            'jadwal': { sheet: 'Jadwal', judul: 'Kelola Jadwal', kolom: [{key: 'ID_Jadwal', label: 'ID Jadwal', type: 'text'}, {key: 'Siswa', label: 'Siswa', type: 'select', source: 'murid'}, {key: 'Program', label: 'Program Kursus', type: 'select', source: 'program'}, {key: 'Tanggal', label: 'Tanggal', type: 'date'}, {key: 'Jam_Mulai', label: 'Jam Mulai', type: 'time'}, {key: 'Jam_Selesai', label: 'Jam Selesai', type: 'time'}, {key: 'Guru', label: 'Guru', type: 'select', source: 'guru'}], data: [] },
+            'murid': { sheet: 'Murid', judul: 'Kelola Data Murid', kolom: [{key: 'ID_Murid', label: 'ID Murid', type: 'text'}, {key: 'Nama', label: 'Nama Lengkap', type: 'text'}, {key: 'Asal_Sekolah', label: 'Asal Sekolah', type: 'text'}, {key: 'Program', label: 'Program Kursus', type: 'select', source:'program'}], data: [] },
+            'guru': { sheet: 'Guru', judul: 'Kelola Data Guru', kolom: [{key: 'ID_Guru', label: 'ID Guru', type:'text'}, {key: 'Nama_Guru', label: 'Nama Guru', type:'text'}, {key: 'Spesialisasi', label: 'Spesialisasi', type:'text'}], data: [] },
+            'template': { sheet: 'Template', judul: 'Kelola Template Laporan', kolom: [{key: 'Program', label: 'Program', type:'select', source:'program'}, {key: 'Tautan_GDoc', label: 'Tautan G-Doc', type:'text'}], data: [] },
+            'akun': { sheet: 'Akun', judul: 'Pengaturan Akun Akses', kolom: [{key: 'Username', label: 'Username', type:'text'}, {key: 'Password', label: 'Password', type:'text'}, {key: 'Role', label: 'Role (admin/guru)', type:'text'}], data: [] }
         };
 
-        // Mengunduh Data dari Google Sheets saat Aplikasi Dibuka
+        // MENGAMBIL DATA DARI GOOGLE SHEETS SAAT HALAMAN DIMUAT
         async function fetchDatabase() {
             try {
                 let res = await fetch(API_URL + "?action=getData");
@@ -303,45 +232,52 @@
                     if(json.data.akun) dbSchema.akun.data = json.data.akun;
                 }
                 
-                // Buka Kunci Layar Login
                 document.getElementById('login-title-text').innerText = "Sistem Login";
                 document.getElementById('login-hint-text').innerText = "Admin: admin/123 | Guru: guru/123";
                 document.getElementById('btn-login').innerText = "Masuk";
                 document.getElementById('btn-login').disabled = false;
                 
-                // Update dropdown jadwal di form laporan
-                updateDropdownJadwal();
                 renderSettingTable('jadwal');
                 renderJadwal();
+                updateDropdownLaporan();
 
             } catch (e) {
-                console.error(e);
                 document.getElementById('login-title-text').innerText = "Gagal Terhubung (Offline)";
                 document.getElementById('login-hint-text').innerText = "Cek koneksi internet Anda lalu refresh halaman.";
             }
         }
 
+        // MENYIMPAN DATA (SINKRONISASI) KE GOOGLE SHEETS
+        async function syncToGoogleSheets(menuKey) {
+            let syncStatus = document.getElementById('sync-status');
+            syncStatus.style.display = 'inline-block';
+            let postData = { action: 'simpanPengaturan', sheetName: dbSchema[menuKey].sheet, payload: dbSchema[menuKey].data };
+
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(postData) });
+                syncStatus.innerText = "Tersimpan! ✔️";
+                setTimeout(() => { syncStatus.style.display = 'none'; syncStatus.innerText = "Menyimpan... ⏳"; }, 3000);
+            } catch(e) {
+                alert("Gagal menyinkronkan data ke Google Sheets.");
+                syncStatus.style.display = 'none';
+            }
+        }
+
         // ==========================================
-        // SISTEM LOGIN
+        // 2. SISTEM LOGIN
         // ==========================================
-        let currentUserRole = '';
+        let currentUserRole = ''; 
 
         function handleLogin() {
             const user = document.getElementById('login-user').value;
             const pass = document.getElementById('login-pass').value;
             const err = document.getElementById('login-error');
 
-            // Cek ke Database (Sheet Akun)
             let validUser = dbSchema.akun.data.find(u => u.Username === user && String(u.Password) === pass);
 
-            if(validUser) {
-                loginSuccess(validUser.Role);
-            } else if (user === 'admin' && pass === '123') {
-                // Fallback jika Google Sheets kosong untuk pertama kali
-                loginSuccess('admin');
-            } else {
-                err.style.display = 'block';
-            }
+            if(validUser) loginSuccess(validUser.Role);
+            else if (user === 'admin' && pass === '123') loginSuccess('admin');
+            else err.style.display = 'block';
         }
 
         function loginSuccess(role) {
@@ -356,107 +292,26 @@
             if(currentUserRole === 'guru') {
                 navSiswa.style.display = 'none';
                 navPengaturan.style.display = 'none';
-                userDisplay.innerHTML = '👨‍🏫 Guru';
+                userDisplay.innerHTML = '👨‍‍🏫 Guru';
                 openTab('jadwal');
             } else {
                 navSiswa.style.display = 'inline-block';
                 navPengaturan.style.display = 'inline-block';
                 userDisplay.innerHTML = '👨‍💻 Admin';
             }
+            renderJadwal();
         }
 
         function handleLogout() {
             currentUserRole = '';
-            document.getElementById('login-user').value = '';
-            document.getElementById('login-pass').value = '';
+            document.getElementById('login-user').value = ''; document.getElementById('login-pass').value = '';
             document.getElementById('login-error').style.display = 'none';
-            document.getElementById('theme-panel').classList.remove('active');
-            
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('app-content').style.display = 'none';
         }
 
         // ==========================================
-        // FUNGSI PENYIMPANAN DATA (SYNC KE GOOGLE)
-        // ==========================================
-        async function syncToGoogleSheets(menuKey) {
-            let syncStatus = document.getElementById('sync-status');
-            syncStatus.style.display = 'inline-block';
-
-            let postData = {
-                action: 'simpanPengaturan',
-                sheetName: dbSchema[menuKey].sheet,
-                payload: dbSchema[menuKey].data
-            };
-
-            try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(postData)
-                });
-                syncStatus.innerText = "Data Tersimpan! ✔️";
-                setTimeout(() => { syncStatus.style.display = 'none'; syncStatus.innerText = "Menyimpan ke Google Sheets... ⏳"; }, 3000);
-            } catch(e) {
-                alert("Gagal menyinkronkan data ke Google Sheets.");
-                syncStatus.style.display = 'none';
-            }
-        }
-
-        // ==========================================
-        // MENGIRIM LAPORAN (DENGAN FILE KE G-DRIVE)
-        // ==========================================
-        function getBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve({ name: file.name, mimeType: file.type, data: reader.result.split(',')[1] });
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        async function kirimLaporan() {
-            let btn = document.getElementById('btn-kirim-laporan');
-            btn.innerText = "Mengunggah Laporan ke Drive... (Mohon Tunggu)";
-            btn.disabled = true;
-
-            try {
-                let payload = {
-                    tanggal: document.getElementById('tgl-pertemuan').value,
-                    jadwal_siswa: document.getElementById('select-siswa').value,
-                    kehadiran: document.getElementById('select-kehadiran').value,
-                    catatan: document.getElementById('catatan-guru').value,
-                    fileLaporan: null,
-                    fileMedia: []
-                };
-
-                let fileLap = document.getElementById('file-laporan').files[0];
-                if(fileLap) payload.fileLaporan = await getBase64(fileLap);
-
-                let filesMedia = document.getElementById('file-media').files;
-                for(let i=0; i<filesMedia.length; i++){
-                    payload.fileMedia.push(await getBase64(filesMedia[i]));
-                }
-
-                let postData = { action: 'simpanLaporan', payload: payload };
-                let res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(postData) });
-                let json = await res.json();
-                
-                alert(json.message || "Laporan berhasil dikirim!");
-                
-                // Bersihkan form
-                document.getElementById('catatan-guru').value = "";
-                document.getElementById('file-laporan').value = "";
-                document.getElementById('file-media').value = "";
-            } catch (e) {
-                alert("Terjadi kesalahan saat mengunggah. Pastikan ukuran file tidak terlalu besar.");
-            } finally {
-                btn.innerText = "Simpan & Kirim Laporan";
-                btn.disabled = false;
-            }
-        }
-
-        // ==========================================
-        // PENGATURAN CRUD UI (CREATE, READ, UPDATE, DELETE)
+        // 3. PENGATURAN CRUD & DROPDOWN OTOMATIS
         // ==========================================
         let activeSettingMenu = 'jadwal';
         let editIndex = -1;
@@ -471,13 +326,9 @@
 
             if (menu === 'tampilan') {
                 document.getElementById('setting-title').innerText = 'Kustomisasi Tampilan Aplikasi';
-                dataView.style.display = 'none';
-                btnTambah.style.display = 'none';
-                uiView.style.display = 'block';
+                dataView.style.display = 'none'; btnTambah.style.display = 'none'; uiView.style.display = 'block';
             } else {
-                dataView.style.display = 'block';
-                btnTambah.style.display = 'block';
-                uiView.style.display = 'none';
+                dataView.style.display = 'block'; btnTambah.style.display = 'block'; uiView.style.display = 'none';
                 renderSettingTable(menu);
             }
         }
@@ -513,7 +364,25 @@
 
             schema.kolom.forEach(k => {
                 let defaultValue = mode === 'edit' ? (schema.data[index][k.key] || '') : '';
-                modalBody.innerHTML += `<div class="form-group"><label>${k.label}</label><input type="text" id="input-${k.key}" value="${defaultValue}"></div>`;
+                let inputHTML = '';
+
+                // Logika Dropdown Dinamis Berdasarkan Sumber Tabel Lain
+                if(k.type === 'select') {
+                    inputHTML = `<select id="input-${k.key}">`;
+                    let optionsData = [];
+                    if(k.source === 'murid') optionsData = dbSchema.murid.data.map(m => m.Nama);
+                    else if(k.source === 'guru') optionsData = dbSchema.guru.data.map(g => g.Nama_Guru);
+                    else if(k.source === 'program') optionsData = listProgram;
+
+                    optionsData.forEach(opt => {
+                        let isSelected = (defaultValue === opt) ? 'selected' : '';
+                        inputHTML += `<option value="${opt}" ${isSelected}>${opt}</option>`;
+                    });
+                    inputHTML += `</select>`;
+                } else {
+                    inputHTML = `<input type="${k.type}" id="input-${k.key}" value="${defaultValue}">`;
+                }
+                modalBody.innerHTML += `<div class="form-group"><label>${k.label}</label>${inputHTML}</div>`;
             });
             document.getElementById('crud-modal').style.display = 'flex';
         }
@@ -530,35 +399,60 @@
 
             closeCrudModal();
             renderSettingTable();
-            syncToGoogleSheets(activeSettingMenu); // TRIGGER PENYIMPANAN
-            
-            if(activeSettingMenu === 'jadwal') {
-                renderJadwal();
-                updateDropdownJadwal();
+            syncToGoogleSheets(activeSettingMenu);
+
+            if(activeSettingMenu === 'jadwal' || activeSettingMenu === 'murid') {
+                renderJadwal(); updateDropdownLaporan();
             }
         }
 
         function deleteCrudData(index) {
-            if(confirm('Hapus data ini dari Google Sheets?')) {
+            if(confirm('Hapus data ini dari database?')) {
                 dbSchema[activeSettingMenu].data.splice(index, 1);
                 renderSettingTable();
-                syncToGoogleSheets(activeSettingMenu); // TRIGGER PENYIMPANAN
-                if(activeSettingMenu === 'jadwal') {
-                    renderJadwal();
-                    updateDropdownJadwal();
-                }
+                syncToGoogleSheets(activeSettingMenu);
+                if(activeSettingMenu === 'jadwal') { renderJadwal(); updateDropdownLaporan(); }
             }
         }
 
         // ==========================================
-        // RENDER JADWAL & DROPDOWN OTOMATIS
+        // 4. REGISTRASI SISWA BARU KE GOOGLE SHEETS
         // ==========================================
-        function updateDropdownJadwal() {
-            const select = document.getElementById('select-siswa');
-            select.innerHTML = '<option value="">-- Pilih Jadwal Siswa --</option>';
-            dbSchema.jadwal.data.forEach(j => {
-                select.innerHTML += `<option value="${j.ID_Jadwal} - ${j.Siswa}">${j.ID_Jadwal} - ${j.Siswa} (${j.Hari_Jam})</option>`;
+        function simpanRegistrasiSiswa() {
+            let nama = document.getElementById('reg-nama').value;
+            let sekolah = document.getElementById('reg-sekolah').value;
+            let program = document.getElementById('reg-program').value;
+            
+            if(!nama) return alert("Nama Lengkap wajib diisi!");
+
+            let newId = 'M-00' + (dbSchema.murid.data.length + 1);
+
+            dbSchema.murid.data.push({
+                ID_Murid: newId,
+                Nama: nama,
+                Asal_Sekolah: sekolah,
+                Program: program
             });
+
+            alert(`Berhasil! Data siswa ${nama} telah disimpan.`);
+            syncToGoogleSheets('murid'); // Simpan ke g-sheets
+
+            document.getElementById('reg-nama').value = '';
+            document.getElementById('reg-sekolah').value = '';
+        }
+
+        // ==========================================
+        // 5. JADWAL DEPAN & LAPORAN
+        // ==========================================
+        function checkStatus(dateStr, startStr, endStr) {
+            const now = new Date();
+            const startDT = new Date(`${dateStr}T${startStr}:00`);
+            const endDT = new Date(`${dateStr}T${endStr}:00`);
+            
+            if(isNaN(startDT.getTime())) return { label: 'Terjadwal', css: 'status-berlangsung' };
+            if (now > endDT) return { label: 'Selesai', css: 'status-selesai' };
+            if (now >= startDT && now <= endDT) return { label: 'Berlangsung', css: 'status-berlangsung' };
+            return { label: 'Mendatang', css: 'status-mendatang' };
         }
 
         function renderJadwal() {
@@ -566,35 +460,83 @@
             container.innerHTML = ''; 
             
             if(dbSchema.jadwal.data.length === 0) {
-                container.innerHTML = '<p style="color:var(--text-muted);">Belum ada jadwal. Silakan tambahkan di Pengaturan.</p>';
+                container.innerHTML = '<p style="color:var(--text-muted);">Belum ada jadwal. Tambahkan melalui tab Pengaturan Data.</p>';
                 return;
             }
 
             dbSchema.jadwal.data.forEach(s => {
+                const status = checkStatus(s.Tanggal, s.Jam_Mulai, s.Jam_Selesai);
                 container.innerHTML += `
                     <div class="card">
                         <div class="card-header">
-                            <span>${s.ID_Jadwal || '-'}</span><span class="status-badge status-berlangsung">Terjadwal</span>
+                            <span>${s.ID_Jadwal || '-'}</span><span class="status-badge ${status.css}">${status.label}</span>
                         </div>
                         <h3 class="student-name">${s.Siswa || 'Tanpa Nama'}</h3>
-                        <div class="card-date">📅 ${s.Hari_Jam || '-'}</div>
+                        <p class="course-info">${s.Program || '-'}</p>
+                        <div class="card-date">📅 ${s.Tanggal || '-'}</div>
                         <div class="card-footer" style="margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
-                            <span>👤 Guru: ${s.Guru || '-'}</span>
+                            <span>👤 ${s.Guru || '-'}</span><span>🕒 ${s.Jam_Mulai || ''} - ${s.Jam_Selesai || ''}</span>
                         </div>
                     </div>`;
             });
         }
 
+        function updateDropdownLaporan() {
+            const select = document.getElementById('select-siswa');
+            select.innerHTML = '<option value="">-- Pilih Jadwal Siswa --</option>';
+            dbSchema.jadwal.data.forEach(j => {
+                select.innerHTML += `<option value="${j.ID_Jadwal} - ${j.Siswa}">${j.ID_Jadwal} - ${j.Siswa} (${j.Tanggal})</option>`;
+            });
+        }
+
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = () => resolve({ name: file.name, mimeType: file.type, data: reader.result.split(',')[1] });
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function kirimLaporan() {
+            let btn = document.getElementById('btn-kirim-laporan');
+            btn.innerText = "Mengunggah Laporan... (Mohon Tunggu)"; btn.disabled = true;
+            try {
+                let payload = {
+                    tanggal: document.getElementById('tgl-pertemuan').value,
+                    jadwal_siswa: document.getElementById('select-siswa').value,
+                    kehadiran: document.getElementById('select-kehadiran').value,
+                    catatan: document.getElementById('catatan-guru').value,
+                    fileLaporan: null, fileMedia: []
+                };
+                let fileLap = document.getElementById('file-laporan').files[0];
+                if(fileLap) payload.fileLaporan = await getBase64(fileLap);
+                let filesMedia = document.getElementById('file-media').files;
+                for(let i=0; i<filesMedia.length; i++) payload.fileMedia.push(await getBase64(filesMedia[i]));
+
+                let res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'simpanLaporan', payload: payload }) });
+                let json = await res.json();
+                alert(json.message || "Laporan berhasil dikirim!");
+                
+                document.getElementById('catatan-guru').value = ""; document.getElementById('file-laporan').value = ""; document.getElementById('file-media').value = "";
+            } catch (e) {
+                alert("Gagal mengunggah file. Pastikan ukuran file tidak terlalu besar.");
+            } finally {
+                btn.innerText = "Simpan & Kirim Laporan"; btn.disabled = false;
+            }
+        }
+
         // ==========================================
-        // FUNGSI LAINNYA (TEMA & INISIALISASI)
+        // UTILITIES
         // ==========================================
         const formatDateForInput = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         
         window.onload = function() {
             const todayStr = formatDateForInput(new Date());
             document.getElementById('tgl-pertemuan').value = todayStr;
-    
-            // Memanggil Database dari Google saat aplikasi pertama dibuka
+            document.getElementById('reg-tgl-masuk').value = todayStr;
+            document.getElementById('ui-login-title').value = document.getElementById('login-title-text').innerText;
+            document.getElementById('ui-login-hint').value = document.getElementById('login-hint-text').innerText;
+            document.getElementById('ui-app-title').value = document.getElementById('app-title-text').innerText;
             fetchDatabase();
         };
 
@@ -604,25 +546,19 @@
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
         }
-
         function toggleThemePanel() { document.getElementById('theme-panel').classList.toggle('active'); }
         function changeBackgroundMode() { document.documentElement.setAttribute('data-theme', document.getElementById('bg-theme').value); }
         function changeAccentColor() { document.documentElement.style.setProperty('--accent', document.getElementById('color-picker').value); }
-
         function simpanTampilanUI() {
             document.getElementById('login-title-text').innerText = document.getElementById('ui-login-title').value;
             document.getElementById('login-hint-text').innerText = document.getElementById('ui-login-hint').value;
             document.getElementById('app-title-text').innerText = document.getElementById('ui-app-title').value;
-            
             const fileInput = document.getElementById('ui-app-logo');
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    document.querySelectorAll('.app-logo-img').forEach(logo => {
-                        logo.src = e.target.result; logo.style.display = 'block'; 
-                    });
-                    document.getElementById('ui-logo-preview').src = e.target.result;
-                    document.getElementById('ui-logo-preview').style.display = 'block';
+                    document.querySelectorAll('.app-logo-img').forEach(logo => { logo.src = e.target.result; logo.style.display = 'block'; });
+                    document.getElementById('ui-logo-preview').src = e.target.result; document.getElementById('ui-logo-preview').style.display = 'block';
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             }
