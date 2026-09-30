@@ -53,10 +53,10 @@
         .time-group { display: flex; gap: 10px; align-items: center; }
 
         button { font-family: inherit; font-size: 14px; }
-        .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; text-align: center; }
         .btn-primary:hover { opacity: 0.9; }
-        .btn-primary:disabled { background-color: var(--border); cursor: not-allowed; }
-        .btn-secondary { background-color: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .btn-primary:disabled { background-color: var(--border); cursor: not-allowed; color: var(--text-muted); }
+        .btn-secondary { background-color: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 4px; cursor: pointer; text-align: center; }
         .btn-danger { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
         
         .settings-layout { display: flex; gap: 20px; }
@@ -74,13 +74,15 @@
         #app-content { display: none; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 2000; }
-        .modal-content { background-color: var(--bg-card); padding: 25px; border-radius: 8px; width: 400px; border: 1px solid var(--border); }
+        .modal-content { background-color: var(--bg-card); padding: 25px; border-radius: 8px; width: 450px; border: 1px solid var(--border); }
         .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--accent); }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
     </style>
 </head>
 <body>
 
+    <!-- LAYAR LOGIN -->
     <div id="login-screen">
         <div class="login-box">
             <img class="app-logo-img" src="" alt="Logo" style="margin: 0 auto 15px auto; max-height: 60px;">
@@ -97,7 +99,9 @@
         </div>
     </div>
 
+    <!-- KONTEN APLIKASI UTAMA -->
     <div id="app-content">
+        <!-- HEADER -->
         <div class="header-container">
             <div class="app-header-left">
                 <img class="app-logo-img" src="" alt="Logo">
@@ -122,13 +126,23 @@
             <button class="tab-btn" id="nav-pengaturan" onclick="openTab('pengaturan')">⚙️ Pengaturan Data</button>
         </div>
 
+        <!-- TAB 1: JADWAL -->
         <div id="jadwal" class="tab-content active"><div class="grid-container" id="jadwal-container"></div></div>
 
+        <!-- TAB 2: KIRIM LAPORAN -->
         <div id="laporan" class="tab-content">
             <div class="form-container">
                 <h3 style="margin-top: 0;">Formulir Laporan Evaluasi</h3>
                 <div class="form-grid">
-                    <div class="form-group full"><label>Pilih Jadwal Siswa</label><select id="select-siswa"><option value="">-- Menunggu Data --</option></select></div>
+                    <div class="form-group full">
+                        <label>Pilih Jadwal Siswa</label>
+                        <select id="select-siswa" onchange="updateTemplateBtn()">
+                            <option value="">-- Menunggu Data --</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <button type="button" class="btn-secondary" id="btn-template" onclick="alert('Pilih Jadwal Siswa terlebih dahulu!')">Download Template Laporan</button>
+                    </div>
                     <div class="form-group"><label>Tanggal Pertemuan</label><input type="date" id="tgl-pertemuan"></div>
                     <div class="form-group"><label>Kehadiran</label><select id="select-kehadiran"><option>Hadir</option><option>Izin</option><option>Sakit</option><option>Alpha</option></select></div>
                     <div class="form-group full"><label>Unggah Hasil Evaluasi (Dokumen)</label><input type="file" id="file-laporan" accept=".pdf,.doc,.docx"></div>
@@ -139,6 +153,7 @@
             </div>
         </div>
 
+        <!-- TAB 3: REGISTRASI SISWA BARU -->
         <div id="siswa" class="tab-content">
             <div class="form-container">
                 <h3 style="margin-top: 0;">Data Profil Siswa Lengkap</h3>
@@ -151,11 +166,24 @@
                     <div class="form-group"><label>Tanggal Masuk</label><input type="date" id="reg-tgl-masuk"></div>
                     <div class="form-group"><label>Nomor Kontak Siswa (WA)</label><input type="tel" id="reg-wa-siswa"></div>
                     <div class="form-group"><label>Nomor Kontak Orang Tua</label><input type="tel" id="reg-wa-ortu"></div>
+                    <!-- WAKTU KURSUS DEFAULT (SESUAI GAMBAR) -->
+                    <div class="form-group full" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+                        <h4 style="margin: 0 0 15px 0; color: var(--accent);">Waktu Kursus Default</h4>
+                    </div>
+                    <div class="form-group">
+                        <label>Hari Kursus</label>
+                        <select id="reg-hari"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option><option>Minggu</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Jam Kursus</label>
+                        <div class="time-group"><input type="time" id="reg-jam-mulai" value="15:00"> <span>s/d</span> <input type="time" id="reg-jam-selesai" value="16:30"></div>
+                    </div>
                 </div>
                 <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="simpanRegistrasiSiswa()">Simpan Data Siswa</button>
             </div>
         </div>
 
+        <!-- TAB 4: PENGATURAN -->
         <div id="pengaturan" class="tab-content">
             <div class="settings-layout">
                 <div class="settings-sidebar">
@@ -193,7 +221,7 @@
     <div class="modal-overlay" id="crud-modal">
         <div class="modal-content">
             <div class="modal-header" id="modal-title">Tambah Data</div>
-            <div id="modal-body"></div>
+            <div id="modal-body" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeCrudModal()">Batal</button>
                 <button class="btn-primary" onclick="saveCrudData()">Simpan Data</button>
@@ -207,23 +235,34 @@
         // ==========================================
         const API_URL = "https://script.google.com/macros/s/AKfycbxhCQiLp4s4vmGzaUDWsoTqtYtRZcrD5KCp445kwJx5bOLPEDcEbFbJ62IJLH9KKunZOQ/exec";
 
-        // SKEMA DATABASE (KEY HARUS PERSIS SAMA DENGAN HEADER GOOGLE SHEETS)
+        // SKEMA DATABASE LENGKAP
         let dbSchema = {
             'jadwal': { sheet: 'Jadwal', judul: 'Kelola Jadwal', kolom: [{key: 'ID_Jadwal', label: 'ID Jadwal', type: 'text'}, {key: 'Siswa', label: 'Siswa', type: 'select', source: 'murid'}, {key: 'Program', label: 'Program Kursus', type: 'select', source: 'program'}, {key: 'Tanggal', label: 'Tanggal', type: 'date'}, {key: 'Jam_Mulai', label: 'Jam Mulai', type: 'time'}, {key: 'Jam_Selesai', label: 'Jam Selesai', type: 'time'}, {key: 'Guru', label: 'Guru', type: 'select', source: 'guru'}], data: [] },
-            'murid': { sheet: 'Murid', judul: 'Kelola Data Murid', kolom: [{key: 'ID_Murid', label: 'ID Murid', type: 'text'}, {key: 'Nama', label: 'Nama Lengkap', type: 'text'}, {key: 'Asal_Sekolah', label: 'Asal Sekolah', type: 'text'}, {key: 'Program', label: 'Program Kursus', type: 'select', source:'program'}], data: [] },
+            
+            // KOLOM MURID DIPERBARUI SESUAI FORM REGISTRASI
+            'murid': { 
+                sheet: 'Murid', judul: 'Kelola Data Murid', 
+                kolom: [
+                    {key: 'ID_Murid', label: 'ID Murid', type: 'text'}, {key: 'Nama', label: 'Nama Lengkap', type: 'text'}, 
+                    {key: 'Asal_Sekolah', label: 'Asal Sekolah', type: 'text'}, {key: 'Usia', label: 'Usia', type: 'number'},
+                    {key: 'Program', label: 'Program Kursus', type: 'select', source:'program'}, {key: 'Nama_Ortu', label: 'Nama Orang Tua', type: 'text'},
+                    {key: 'Tgl_Masuk', label: 'Tanggal Masuk', type: 'date'}, {key: 'WA_Siswa', label: 'WA Siswa', type: 'text'},
+                    {key: 'WA_Ortu', label: 'WA Orang Tua', type: 'text'}, {key: 'Hari_Default', label: 'Hari Kursus', type: 'text'},
+                    {key: 'Jam_Mulai', label: 'Jam Mulai', type: 'time'}, {key: 'Jam_Selesai', label: 'Jam Selesai', type: 'time'}
+                ], data: [] 
+            },
+            
             'guru': { sheet: 'Guru', judul: 'Kelola Data Guru', kolom: [{key: 'ID_Guru', label: 'ID Guru', type:'text'}, {key: 'Nama_Guru', label: 'Nama Guru', type:'text'}, {key: 'Spesialisasi', label: 'Spesialisasi', type:'text'}], data: [] },
             'template': { sheet: 'Template', judul: 'Kelola Template Laporan', kolom: [{key: 'Program', label: 'Program', type:'text'}, {key: 'Level', label: 'Level', type:'text'}, {key: 'Tautan_GDoc', label: 'Tautan G-Doc', type:'text'}], data: [] },
             'akun': { sheet: 'Akun', judul: 'Pengaturan Akun Akses', kolom: [{key: 'Username', label: 'Username', type:'text'}, {key: 'Password', label: 'Password', type:'text'}, {key: 'Role', label: 'Role (admin/guru)', type:'text'}], data: [] }
         };
 
-        // FUNGSI MENDAPATKAN LIST PROGRAM DINAMIS DARI TEMPLATE
         function getProgramList() {
             if(!dbSchema.template || !dbSchema.template.data) return [];
             let programs = dbSchema.template.data.map(t => t.Program).filter(Boolean);
-            return [...new Set(programs)]; // Menghapus duplikat
+            return [...new Set(programs)];
         }
 
-        // MENGAMBIL DATA DARI GOOGLE SHEETS SAAT HALAMAN DIMUAT
         async function fetchDatabase() {
             try {
                 let res = await fetch(API_URL + "?action=getData");
@@ -245,7 +284,7 @@
                 renderSettingTable('jadwal');
                 renderJadwal();
                 updateDropdownLaporan();
-                updateDropdownProgram(); // Update dropdown Program Kursus
+                updateDropdownProgram(); 
 
             } catch (e) {
                 document.getElementById('login-title-text').innerText = "Gagal Terhubung (Offline)";
@@ -253,7 +292,6 @@
             }
         }
 
-        // MENYIMPAN DATA (SINKRONISASI) KE GOOGLE SHEETS
         async function syncToGoogleSheets(menuKey) {
             let syncStatus = document.getElementById('sync-status');
             syncStatus.style.display = 'inline-block';
@@ -345,12 +383,14 @@
             document.getElementById('setting-title').innerText = schema.judul;
             
             let html = '<thead><tr>';
-            schema.kolom.forEach(k => html += `<th>${k.label}</th>`);
+            // Hanya tampilkan 5 kolom pertama di tabel agar tidak kepanjangan, sisanya bisa dilihat di Edit
+            let visibleCols = schema.kolom.slice(0, 5);
+            visibleCols.forEach(k => html += `<th>${k.label}</th>`);
             html += '<th>Aksi</th></tr></thead><tbody>';
 
             schema.data.forEach((row, index) => {
                 html += '<tr>';
-                schema.kolom.forEach(k => html += `<td>${row[k.key] || ''}</td>`);
+                visibleCols.forEach(k => html += `<td>${row[k.key] || ''}</td>`);
                 html += `
                     <td class="action-btns">
                         <button class="btn-secondary" onclick="openCrudModal('edit', ${index})" style="padding: 4px 8px; font-size: 11px;">Edit</button>
@@ -372,13 +412,12 @@
                 let defaultValue = mode === 'edit' ? (schema.data[index][k.key] || '') : '';
                 let inputHTML = '';
 
-                // Logika Dropdown Dinamis Berdasarkan Sumber Tabel Lain
                 if(k.type === 'select') {
                     inputHTML = `<select id="input-${k.key}">`;
                     let optionsData = [];
                     if(k.source === 'murid') optionsData = dbSchema.murid.data.map(m => m.Nama);
                     else if(k.source === 'guru') optionsData = dbSchema.guru.data.map(g => g.Nama_Guru);
-                    else if(k.source === 'program') optionsData = getProgramList(); // DINAMIS DARI TEMPLATE
+                    else if(k.source === 'program') optionsData = getProgramList(); 
 
                     optionsData.forEach(opt => {
                         let isSelected = (defaultValue === opt) ? 'selected' : '';
@@ -411,7 +450,7 @@
                 renderJadwal(); updateDropdownLaporan();
             }
             if(activeSettingMenu === 'template') {
-                updateDropdownProgram(); // Jika template berubah, perbarui dropdown program
+                updateDropdownProgram(); 
             }
         }
 
@@ -426,13 +465,10 @@
         }
 
         // ==========================================
-        // 4. REGISTRASI SISWA BARU KE GOOGLE SHEETS
+        // 4. REGISTRASI SISWA BARU (12 DATA LENGKAP)
         // ==========================================
         function simpanRegistrasiSiswa() {
             let nama = document.getElementById('reg-nama').value;
-            let sekolah = document.getElementById('reg-sekolah').value;
-            let program = document.getElementById('reg-program').value;
-            
             if(!nama) return alert("Nama Lengkap wajib diisi!");
 
             let newId = 'M-00' + (dbSchema.murid.data.length + 1);
@@ -440,15 +476,25 @@
             dbSchema.murid.data.push({
                 ID_Murid: newId,
                 Nama: nama,
-                Asal_Sekolah: sekolah,
-                Program: program
+                Asal_Sekolah: document.getElementById('reg-sekolah').value,
+                Usia: document.getElementById('reg-usia').value,
+                Program: document.getElementById('reg-program').value,
+                Nama_Ortu: document.getElementById('reg-ortu').value,
+                Tgl_Masuk: document.getElementById('reg-tgl-masuk').value,
+                WA_Siswa: document.getElementById('reg-wa-siswa').value,
+                WA_Ortu: document.getElementById('reg-wa-ortu').value,
+                Hari_Default: document.getElementById('reg-hari').value,
+                Jam_Mulai: document.getElementById('reg-jam-mulai').value,
+                Jam_Selesai: document.getElementById('reg-jam-selesai').value
             });
 
             alert(`Berhasil! Data siswa ${nama} telah disimpan.`);
             syncToGoogleSheets('murid'); 
 
-            document.getElementById('reg-nama').value = '';
-            document.getElementById('reg-sekolah').value = '';
+            // Bersihkan form
+            document.getElementById('reg-nama').value = ''; document.getElementById('reg-sekolah').value = '';
+            document.getElementById('reg-usia').value = ''; document.getElementById('reg-ortu').value = '';
+            document.getElementById('reg-wa-siswa').value = ''; document.getElementById('reg-wa-ortu').value = '';
         }
 
         function updateDropdownProgram() {
@@ -462,7 +508,7 @@
         }
 
         // ==========================================
-        // 5. JADWAL DEPAN & LAPORAN
+        // 5. JADWAL DEPAN & LAPORAN OTOMATIS
         // ==========================================
         function checkStatus(dateStr, startStr, endStr) {
             const now = new Date();
@@ -505,8 +551,33 @@
             const select = document.getElementById('select-siswa');
             select.innerHTML = '<option value="">-- Pilih Jadwal Siswa --</option>';
             dbSchema.jadwal.data.forEach(j => {
-                select.innerHTML += `<option value="${j.ID_Jadwal} - ${j.Siswa}">${j.ID_Jadwal} - ${j.Siswa} (${j.Tanggal})</option>`;
+                // Menyimpan ID_Jadwal sebagai value
+                select.innerHTML += `<option value="${j.ID_Jadwal}">${j.ID_Jadwal} - ${j.Siswa} (${j.Tanggal})</option>`;
             });
+        }
+
+        // LOGIKA DOWNLOAD TEMPLATE DINAMIS
+        function updateTemplateBtn() {
+            const idJadwal = document.getElementById('select-siswa').value;
+            const btn = document.getElementById('btn-template');
+            
+            if(!idJadwal) {
+                btn.innerText = 'Download Template Laporan';
+                btn.onclick = () => alert('Pilih Jadwal Siswa terlebih dahulu!');
+                return;
+            }
+
+            let jadwal = dbSchema.jadwal.data.find(j => j.ID_Jadwal === idJadwal);
+            if(jadwal && jadwal.Program) {
+                let template = dbSchema.template.data.find(t => t.Program === jadwal.Program);
+                if(template && template.Tautan_GDoc) {
+                    btn.innerText = `⬇️ Download Template ${jadwal.Program}`;
+                    btn.onclick = () => window.open(template.Tautan_GDoc, '_blank');
+                } else {
+                    btn.innerText = `Template ${jadwal.Program} Belum Tersedia`;
+                    btn.onclick = () => alert('Admin belum menambahkan link template untuk program ini di Pengaturan Data.');
+                }
+            }
         }
 
         function getBase64(file) {
