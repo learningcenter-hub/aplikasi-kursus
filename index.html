@@ -82,7 +82,6 @@
 </head>
 <body>
 
-    <!-- LAYAR LOGIN -->
     <div id="login-screen">
         <div class="login-box">
             <img class="app-logo-img" src="" alt="Logo" style="margin: 0 auto 15px auto; max-height: 60px;">
@@ -99,9 +98,7 @@
         </div>
     </div>
 
-    <!-- KONTEN APLIKASI UTAMA -->
     <div id="app-content">
-        <!-- HEADER -->
         <div class="header-container">
             <div class="app-header-left">
                 <img class="app-logo-img" src="" alt="Logo">
@@ -111,8 +108,8 @@
                 <div class="user-info" id="user-display">👨‍💻 Admin</div>
                 <button class="btn-secondary" onclick="toggleThemePanel()">⚙️ Tema & Akun</button>
                 <div class="theme-panel" id="theme-panel">
-                    <div class="form-group"><label>Mode Tampilan</label><select id="bg-theme" onchange="changeBackgroundMode()"><option value="dark">Gelap (Dark)</option><option value="light">Terang (Light)</option></select></div>
-                    <div class="form-group"><label>Warna Aksen</label><input type="color" id="color-picker" value="#3b82f6" onchange="changeAccentColor()"></div>
+                    <div class="form-group"><label>Mode Tampilan (Lokal)</label><select id="bg-theme" onchange="changeBackgroundMode()"><option value="dark">Gelap (Dark)</option><option value="light">Terang (Light)</option></select></div>
+                    <div class="form-group"><label>Warna Aksen (Global)</label><input type="color" id="color-picker" value="#3b82f6" onchange="changeAccentColor()"></div>
                     <hr style="border-color: var(--border); margin: 10px 0;">
                     <button class="btn-danger" style="width: 100%;" onclick="handleLogout()">Keluar (Logout)</button>
                 </div>
@@ -123,26 +120,17 @@
             <button class="tab-btn active" onclick="openTab('jadwal')">📅 Jadwal Hari Ini</button>
             <button class="tab-btn" onclick="openTab('laporan')">📤 Kirim Laporan</button>
             <button class="tab-btn" id="nav-siswa" onclick="openTab('siswa')">👤 Registrasi Siswa Baru</button>
-            <button class="tab-btn" id="nav-pengaturan" onclick="openTab('pengaturan')">⚙️ Pengaturan Data</button>
+            <button class="tab-btn" id="nav-pengaturan" onclick="openTab('pengaturan')">⚙️️ Pengaturan Data</button>
         </div>
 
-        <!-- TAB 1: JADWAL -->
         <div id="jadwal" class="tab-content active"><div class="grid-container" id="jadwal-container"></div></div>
 
-        <!-- TAB 2: KIRIM LAPORAN -->
         <div id="laporan" class="tab-content">
             <div class="form-container">
                 <h3 style="margin-top: 0;">Formulir Laporan Evaluasi</h3>
                 <div class="form-grid">
-                    <div class="form-group full">
-                        <label>Pilih Jadwal Siswa</label>
-                        <select id="select-siswa" onchange="updateTemplateBtn()">
-                            <option value="">-- Menunggu Data --</option>
-                        </select>
-                    </div>
-                    <div class="form-group full">
-                        <button type="button" class="btn-secondary" id="btn-template" onclick="alert('Pilih Jadwal Siswa terlebih dahulu!')">Download Template Laporan</button>
-                    </div>
+                    <div class="form-group full"><label>Pilih Jadwal Siswa</label><select id="select-siswa" onchange="updateTemplateBtn()"><option value="">-- Menunggu Data --</option></select></div>
+                    <div class="form-group full"><button type="button" class="btn-secondary" id="btn-template" onclick="alert('Pilih Jadwal Siswa terlebih dahulu!')">Download Template Laporan</button></div>
                     <div class="form-group"><label>Tanggal Pertemuan</label><input type="date" id="tgl-pertemuan"></div>
                     <div class="form-group"><label>Kehadiran</label><select id="select-kehadiran"><option>Hadir</option><option>Izin</option><option>Sakit</option><option>Alpha</option></select></div>
                     <div class="form-group full"><label>Unggah Hasil Evaluasi (Dokumen)</label><input type="file" id="file-laporan" accept=".pdf,.doc,.docx"></div>
@@ -153,7 +141,6 @@
             </div>
         </div>
 
-        <!-- TAB 3: REGISTRASI SISWA BARU -->
         <div id="siswa" class="tab-content">
             <div class="form-container">
                 <h3 style="margin-top: 0;">Data Profil Siswa Lengkap</h3>
@@ -166,24 +153,14 @@
                     <div class="form-group"><label>Tanggal Masuk</label><input type="date" id="reg-tgl-masuk"></div>
                     <div class="form-group"><label>Nomor Kontak Siswa (WA)</label><input type="tel" id="reg-wa-siswa"></div>
                     <div class="form-group"><label>Nomor Kontak Orang Tua</label><input type="tel" id="reg-wa-ortu"></div>
-                    <!-- WAKTU KURSUS DEFAULT (SESUAI GAMBAR) -->
-                    <div class="form-group full" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
-                        <h4 style="margin: 0 0 15px 0; color: var(--accent);">Waktu Kursus Default</h4>
-                    </div>
-                    <div class="form-group">
-                        <label>Hari Kursus</label>
-                        <select id="reg-hari"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option><option>Minggu</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Jam Kursus</label>
-                        <div class="time-group"><input type="time" id="reg-jam-mulai" value="15:00"> <span>s/d</span> <input type="time" id="reg-jam-selesai" value="16:30"></div>
-                    </div>
+                    <div class="form-group full" style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;"><h4 style="margin: 0 0 15px 0; color: var(--accent);">Waktu Kursus Default</h4></div>
+                    <div class="form-group"><label>Hari Kursus</label><select id="reg-hari"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option><option>Minggu</option></select></div>
+                    <div class="form-group"><label>Jam Kursus</label><div class="time-group"><input type="time" id="reg-jam-mulai" value="15:00"> <span>s/d</span> <input type="time" id="reg-jam-selesai" value="16:30"></div></div>
                 </div>
                 <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="simpanRegistrasiSiswa()">Simpan Data Siswa</button>
             </div>
         </div>
 
-        <!-- TAB 4: PENGATURAN -->
         <div id="pengaturan" class="tab-content">
             <div class="settings-layout">
                 <div class="settings-sidebar">
@@ -206,11 +183,12 @@
                     <div id="setting-data-view"><table id="setting-table"></table></div>
 
                     <div id="setting-ui-view" style="display: none;">
+                        <p style="color:var(--text-muted); font-size:13px; margin-top:0;">(Pengaturan ini akan diterapkan secara Global untuk semua pengguna yang mengakses aplikasi ini).</p>
                         <div class="form-group"><label>Judul Layar Login</label><input type="text" id="ui-login-title"></div>
                         <div class="form-group"><label>Teks Bantuan Login (Hint)</label><input type="text" id="ui-login-hint"></div>
                         <div class="form-group"><label>Judul Dashboard (Kiri Atas)</label><input type="text" id="ui-app-title"></div>
                         <div class="form-group"><label>Unggah Logo</label><input type="file" id="ui-app-logo" accept="image/*"><img id="ui-logo-preview" style="max-height: 50px; margin-top: 10px; display: none; border-radius: 4px;"></div>
-                        <button class="btn-primary" style="margin-top: 15px;" onclick="simpanTampilanUI()">Simpan Perubahan Tampilan</button>
+                        <button class="btn-primary" style="margin-top: 15px;" onclick="simpanTampilanGlobal()">Simpan Tampilan Secara Global</button>
                     </div>
                 </div>
             </div>
@@ -230,31 +208,15 @@
     </div>
 
     <script>
-        // ==========================================
-        // 1. KONEKSI GOOGLE APPS SCRIPT
-        // ==========================================
         const API_URL = "https://script.google.com/macros/s/AKfycbxhCQiLp4s4vmGzaUDWsoTqtYtRZcrD5KCp445kwJx5bOLPEDcEbFbJ62IJLH9KKunZOQ/exec";
 
-        // SKEMA DATABASE LENGKAP
         let dbSchema = {
             'jadwal': { sheet: 'Jadwal', judul: 'Kelola Jadwal', kolom: [{key: 'ID_Jadwal', label: 'ID Jadwal', type: 'text'}, {key: 'Siswa', label: 'Siswa', type: 'select', source: 'murid'}, {key: 'Program', label: 'Program Kursus', type: 'select', source: 'program'}, {key: 'Tanggal', label: 'Tanggal', type: 'date'}, {key: 'Jam_Mulai', label: 'Jam Mulai', type: 'time'}, {key: 'Jam_Selesai', label: 'Jam Selesai', type: 'time'}, {key: 'Guru', label: 'Guru', type: 'select', source: 'guru'}], data: [] },
-            
-            // KOLOM MURID DIPERBARUI SESUAI FORM REGISTRASI
-            'murid': { 
-                sheet: 'Murid', judul: 'Kelola Data Murid', 
-                kolom: [
-                    {key: 'ID_Murid', label: 'ID Murid', type: 'text'}, {key: 'Nama', label: 'Nama Lengkap', type: 'text'}, 
-                    {key: 'Asal_Sekolah', label: 'Asal Sekolah', type: 'text'}, {key: 'Usia', label: 'Usia', type: 'number'},
-                    {key: 'Program', label: 'Program Kursus', type: 'select', source:'program'}, {key: 'Nama_Ortu', label: 'Nama Orang Tua', type: 'text'},
-                    {key: 'Tgl_Masuk', label: 'Tanggal Masuk', type: 'date'}, {key: 'WA_Siswa', label: 'WA Siswa', type: 'text'},
-                    {key: 'WA_Ortu', label: 'WA Orang Tua', type: 'text'}, {key: 'Hari_Default', label: 'Hari Kursus', type: 'text'},
-                    {key: 'Jam_Mulai', label: 'Jam Mulai', type: 'time'}, {key: 'Jam_Selesai', label: 'Jam Selesai', type: 'time'}
-                ], data: [] 
-            },
-            
+            'murid': { sheet: 'Murid', judul: 'Kelola Data Murid', kolom: [{key: 'ID_Murid', label: 'ID Murid', type: 'text'}, {key: 'Nama', label: 'Nama Lengkap', type: 'text'}, {key: 'Asal_Sekolah', label: 'Asal Sekolah', type: 'text'}, {key: 'Usia', label: 'Usia', type: 'number'}, {key: 'Program', label: 'Program Kursus', type: 'select', source:'program'}, {key: 'Nama_Ortu', label: 'Nama Orang Tua', type: 'text'}, {key: 'Tgl_Masuk', label: 'Tanggal Masuk', type: 'date'}, {key: 'WA_Siswa', label: 'WA Siswa', type: 'text'}, {key: 'WA_Ortu', label: 'WA Orang Tua', type: 'text'}, {key: 'Hari_Default', label: 'Hari Kursus', type: 'text'}, {key: 'Jam_Mulai', label: 'Jam Mulai', type: 'time'}, {key: 'Jam_Selesai', label: 'Jam Selesai', type: 'time'}], data: [] },
             'guru': { sheet: 'Guru', judul: 'Kelola Data Guru', kolom: [{key: 'ID_Guru', label: 'ID Guru', type:'text'}, {key: 'Nama_Guru', label: 'Nama Guru', type:'text'}, {key: 'Spesialisasi', label: 'Spesialisasi', type:'text'}], data: [] },
             'template': { sheet: 'Template', judul: 'Kelola Template Laporan', kolom: [{key: 'Program', label: 'Program', type:'text'}, {key: 'Level', label: 'Level', type:'text'}, {key: 'Tautan_GDoc', label: 'Tautan G-Doc', type:'text'}], data: [] },
-            'akun': { sheet: 'Akun', judul: 'Pengaturan Akun Akses', kolom: [{key: 'Username', label: 'Username', type:'text'}, {key: 'Password', label: 'Password', type:'text'}, {key: 'Role', label: 'Role (admin/guru)', type:'text'}], data: [] }
+            'akun': { sheet: 'Akun', judul: 'Pengaturan Akun Akses', kolom: [{key: 'Username', label: 'Username', type:'text'}, {key: 'Password', label: 'Password', type:'text'}, {key: 'Role', label: 'Role (admin/guru)', type:'text'}], data: [] },
+            'tampilan': { sheet: 'Tampilan', judul: 'Pengaturan Tampilan', kolom: [], data: [] }
         };
 
         function getProgramList() {
@@ -274,10 +236,17 @@
                     if(json.data.guru) dbSchema.guru.data = json.data.guru;
                     if(json.data.template) dbSchema.template.data = json.data.template;
                     if(json.data.akun) dbSchema.akun.data = json.data.akun;
+                    
+                    // MENANGANI DATA TAMPILAN GLOBAL
+                    if(json.data.tampilan && json.data.tampilan.length > 0) {
+                        dbSchema.tampilan.data = json.data.tampilan;
+                    } else {
+                        // Default jika tab Tampilan di Google Sheets masih kosong
+                        dbSchema.tampilan.data = [{ ID_Tampilan: 'UI-01', Judul_Login: 'Sistem Login', Hint_Login: 'Admin: admin/123 | Guru: guru/123', Judul_Aplikasi: 'Dashboard Manajemen Kursus', Warna_Aksen: '#3b82f6', Logo_Base64: '' }];
+                    }
+                    terapkanTampilanGlobal();
                 }
                 
-                document.getElementById('login-title-text').innerText = "Sistem Login";
-                document.getElementById('login-hint-text').innerText = "Admin: admin/123 | Guru: guru/123";
                 document.getElementById('btn-login').innerText = "Masuk";
                 document.getElementById('btn-login').disabled = false;
                 
@@ -308,17 +277,89 @@
         }
 
         // ==========================================
-        // 2. SISTEM LOGIN
+        // SISTEM TAMPILAN GLOBAL (BARU)
+        // ==========================================
+        function terapkanTampilanGlobal() {
+            let ui = dbSchema.tampilan.data[0];
+            if(!ui) return;
+
+            // Terapkan Judul
+            document.getElementById('login-title-text').innerText = ui.Judul_Login || '';
+            document.getElementById('ui-login-title').value = ui.Judul_Login || '';
+            
+            document.getElementById('login-hint-text').innerText = ui.Hint_Login || '';
+            document.getElementById('ui-login-hint').value = ui.Hint_Login || '';
+            
+            document.getElementById('app-title-text').innerText = ui.Judul_Aplikasi || '';
+            document.getElementById('html-title').innerText = ui.Judul_Aplikasi || 'Sistem Manajemen Kursus';
+            document.getElementById('ui-app-title').value = ui.Judul_Aplikasi || '';
+
+            // Terapkan Warna (Hanya warna yang dikunci Global, Mode Tema tetap lokal)
+            document.documentElement.style.setProperty('--accent', ui.Warna_Aksen || '#3b82f6');
+            document.getElementById('color-picker').value = ui.Warna_Aksen || '#3b82f6';
+
+            // Terapkan Logo
+            if(ui.Logo_Base64) {
+                document.querySelectorAll('.app-logo-img').forEach(logo => { logo.src = ui.Logo_Base64; logo.style.display = 'block'; });
+                document.getElementById('ui-logo-preview').src = ui.Logo_Base64;
+                document.getElementById('ui-logo-preview').style.display = 'block';
+            }
+        }
+
+        function kompresGambar(base64Str, maxHeight, callback) {
+            let img = new Image();
+            img.src = base64Str;
+            img.onload = function() {
+                if(img.height <= maxHeight) { callback(base64Str); return; } // Jangan diubah jika sudah kecil
+                let canvas = document.createElement('canvas');
+                let ratio = maxHeight / img.height;
+                canvas.height = maxHeight;
+                canvas.width = img.width * ratio;
+                let ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                callback(canvas.toDataURL('image/jpeg', 0.8)); // Kompres menjadi jpeg kecil
+            };
+        }
+
+        function simpanTampilanGlobal() {
+            let ui = dbSchema.tampilan.data[0] || { ID_Tampilan: 'UI-01' };
+            ui.Judul_Login = document.getElementById('ui-login-title').value;
+            ui.Hint_Login = document.getElementById('ui-login-hint').value;
+            ui.Judul_Aplikasi = document.getElementById('ui-app-title').value;
+            ui.Warna_Aksen = document.getElementById('color-picker').value;
+
+            const fileInput = document.getElementById('ui-app-logo');
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    // Kecilkan gambar agar tidak eror masuk Google Sheets
+                    kompresGambar(e.target.result, 150, function(resizedBase64) {
+                        ui.Logo_Base64 = resizedBase64;
+                        dbSchema.tampilan.data[0] = ui;
+                        terapkanTampilanGlobal();
+                        syncToGoogleSheets('tampilan');
+                        alert('Tampilan Global Diperbarui!');
+                    });
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                dbSchema.tampilan.data[0] = ui;
+                terapkanTampilanGlobal();
+                syncToGoogleSheets('tampilan');
+                alert('Tampilan Global Diperbarui!');
+            }
+        }
+
+        // ==========================================
+        // SISTEM LOGIN & CRUD
         // ==========================================
         let currentUserRole = ''; 
-
         function handleLogin() {
             const user = document.getElementById('login-user').value;
             const pass = document.getElementById('login-pass').value;
             const err = document.getElementById('login-error');
 
             let validUser = dbSchema.akun.data.find(u => u.Username === user && String(u.Password) === pass);
-
             if(validUser) loginSuccess(validUser.Role);
             else if (user === 'admin' && pass === '123') loginSuccess('admin');
             else err.style.display = 'block';
@@ -334,13 +375,10 @@
             const userDisplay = document.getElementById('user-display');
 
             if(currentUserRole === 'guru') {
-                navSiswa.style.display = 'none';
-                navPengaturan.style.display = 'none';
-                userDisplay.innerHTML = '👨‍‍🏫 Guru';
-                openTab('jadwal');
+                navSiswa.style.display = 'none'; navPengaturan.style.display = 'none';
+                userDisplay.innerHTML = '👨‍‍🏫 Guru'; openTab('jadwal');
             } else {
-                navSiswa.style.display = 'inline-block';
-                navPengaturan.style.display = 'inline-block';
+                navSiswa.style.display = 'inline-block'; navPengaturan.style.display = 'inline-block';
                 userDisplay.innerHTML = '👨‍💻 Admin';
             }
             renderJadwal();
@@ -354,9 +392,6 @@
             document.getElementById('app-content').style.display = 'none';
         }
 
-        // ==========================================
-        // 3. PENGATURAN CRUD & DROPDOWN OTOMATIS
-        // ==========================================
         let activeSettingMenu = 'jadwal';
         let editIndex = -1;
 
@@ -383,7 +418,6 @@
             document.getElementById('setting-title').innerText = schema.judul;
             
             let html = '<thead><tr>';
-            // Hanya tampilkan 5 kolom pertama di tabel agar tidak kepanjangan, sisanya bisa dilihat di Edit
             let visibleCols = schema.kolom.slice(0, 5);
             visibleCols.forEach(k => html += `<th>${k.label}</th>`);
             html += '<th>Aksi</th></tr></thead><tbody>';
@@ -442,31 +476,21 @@
             if(editIndex === -1) schema.data.push(newData);
             else schema.data[editIndex] = newData;
 
-            closeCrudModal();
-            renderSettingTable();
-            syncToGoogleSheets(activeSettingMenu);
+            closeCrudModal(); renderSettingTable(); syncToGoogleSheets(activeSettingMenu);
 
-            if(activeSettingMenu === 'jadwal' || activeSettingMenu === 'murid') {
-                renderJadwal(); updateDropdownLaporan();
-            }
-            if(activeSettingMenu === 'template') {
-                updateDropdownProgram(); 
-            }
+            if(activeSettingMenu === 'jadwal' || activeSettingMenu === 'murid') { renderJadwal(); updateDropdownLaporan(); }
+            if(activeSettingMenu === 'template') { updateDropdownProgram(); }
         }
 
         function deleteCrudData(index) {
             if(confirm('Hapus data ini dari database?')) {
                 dbSchema[activeSettingMenu].data.splice(index, 1);
-                renderSettingTable();
-                syncToGoogleSheets(activeSettingMenu);
+                renderSettingTable(); syncToGoogleSheets(activeSettingMenu);
                 if(activeSettingMenu === 'jadwal' || activeSettingMenu === 'murid') { renderJadwal(); updateDropdownLaporan(); }
                 if(activeSettingMenu === 'template') updateDropdownProgram(); 
             }
         }
 
-        // ==========================================
-        // 4. REGISTRASI SISWA BARU (12 DATA LENGKAP)
-        // ==========================================
         function simpanRegistrasiSiswa() {
             let nama = document.getElementById('reg-nama').value;
             if(!nama) return alert("Nama Lengkap wajib diisi!");
@@ -474,24 +498,17 @@
             let newId = 'M-00' + (dbSchema.murid.data.length + 1);
 
             dbSchema.murid.data.push({
-                ID_Murid: newId,
-                Nama: nama,
-                Asal_Sekolah: document.getElementById('reg-sekolah').value,
-                Usia: document.getElementById('reg-usia').value,
-                Program: document.getElementById('reg-program').value,
-                Nama_Ortu: document.getElementById('reg-ortu').value,
-                Tgl_Masuk: document.getElementById('reg-tgl-masuk').value,
-                WA_Siswa: document.getElementById('reg-wa-siswa').value,
-                WA_Ortu: document.getElementById('reg-wa-ortu').value,
-                Hari_Default: document.getElementById('reg-hari').value,
-                Jam_Mulai: document.getElementById('reg-jam-mulai').value,
+                ID_Murid: newId, Nama: nama, Asal_Sekolah: document.getElementById('reg-sekolah').value,
+                Usia: document.getElementById('reg-usia').value, Program: document.getElementById('reg-program').value,
+                Nama_Ortu: document.getElementById('reg-ortu').value, Tgl_Masuk: document.getElementById('reg-tgl-masuk').value,
+                WA_Siswa: document.getElementById('reg-wa-siswa').value, WA_Ortu: document.getElementById('reg-wa-ortu').value,
+                Hari_Default: document.getElementById('reg-hari').value, Jam_Mulai: document.getElementById('reg-jam-mulai').value,
                 Jam_Selesai: document.getElementById('reg-jam-selesai').value
             });
 
             alert(`Berhasil! Data siswa ${nama} telah disimpan.`);
             syncToGoogleSheets('murid'); 
 
-            // Bersihkan form
             document.getElementById('reg-nama').value = ''; document.getElementById('reg-sekolah').value = '';
             document.getElementById('reg-usia').value = ''; document.getElementById('reg-ortu').value = '';
             document.getElementById('reg-wa-siswa').value = ''; document.getElementById('reg-wa-ortu').value = '';
@@ -501,15 +518,10 @@
             const selectReg = document.getElementById('reg-program');
             if(selectReg) {
                 selectReg.innerHTML = '';
-                getProgramList().forEach(p => {
-                    selectReg.innerHTML += `<option value="${p}">${p}</option>`;
-                });
+                getProgramList().forEach(p => { selectReg.innerHTML += `<option value="${p}">${p}</option>`; });
             }
         }
 
-        // ==========================================
-        // 5. JADWAL DEPAN & LAPORAN OTOMATIS
-        // ==========================================
         function checkStatus(dateStr, startStr, endStr) {
             const now = new Date();
             const startDT = new Date(`${dateStr}T${startStr}:00`);
@@ -522,23 +534,15 @@
         }
 
         function renderJadwal() {
-            const container = document.getElementById('jadwal-container');
-            container.innerHTML = ''; 
-            
-            if(dbSchema.jadwal.data.length === 0) {
-                container.innerHTML = '<p style="color:var(--text-muted);">Belum ada jadwal. Tambahkan melalui tab Pengaturan Data.</p>';
-                return;
-            }
+            const container = document.getElementById('jadwal-container'); container.innerHTML = ''; 
+            if(dbSchema.jadwal.data.length === 0) { container.innerHTML = '<p style="color:var(--text-muted);">Belum ada jadwal. Tambahkan melalui tab Pengaturan Data.</p>'; return; }
 
             dbSchema.jadwal.data.forEach(s => {
                 const status = checkStatus(s.Tanggal, s.Jam_Mulai, s.Jam_Selesai);
                 container.innerHTML += `
                     <div class="card">
-                        <div class="card-header">
-                            <span>${s.ID_Jadwal || '-'}</span><span class="status-badge ${status.css}">${status.label}</span>
-                        </div>
-                        <h3 class="student-name">${s.Siswa || 'Tanpa Nama'}</h3>
-                        <p class="course-info">${s.Program || '-'}</p>
+                        <div class="card-header"><span>${s.ID_Jadwal || '-'}</span><span class="status-badge ${status.css}">${status.label}</span></div>
+                        <h3 class="student-name">${s.Siswa || 'Tanpa Nama'}</h3><p class="course-info">${s.Program || '-'}</p>
                         <div class="card-date">📅 ${s.Tanggal || '-'}</div>
                         <div class="card-footer" style="margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
                             <span>👤 ${s.Guru || '-'}</span><span>🕒 ${s.Jam_Mulai || ''} - ${s.Jam_Selesai || ''}</span>
@@ -548,15 +552,10 @@
         }
 
         function updateDropdownLaporan() {
-            const select = document.getElementById('select-siswa');
-            select.innerHTML = '<option value="">-- Pilih Jadwal Siswa --</option>';
-            dbSchema.jadwal.data.forEach(j => {
-                // Menyimpan ID_Jadwal sebagai value
-                select.innerHTML += `<option value="${j.ID_Jadwal}">${j.ID_Jadwal} - ${j.Siswa} (${j.Tanggal})</option>`;
-            });
+            const select = document.getElementById('select-siswa'); select.innerHTML = '<option value="">-- Pilih Jadwal Siswa --</option>';
+            dbSchema.jadwal.data.forEach(j => { select.innerHTML += `<option value="${j.ID_Jadwal}">${j.ID_Jadwal} - ${j.Siswa} (${j.Tanggal})</option>`; });
         }
 
-        // LOGIKA DOWNLOAD TEMPLATE DINAMIS
         function updateTemplateBtn() {
             const idJadwal = document.getElementById('select-siswa').value;
             const btn = document.getElementById('btn-template');
@@ -593,10 +592,8 @@
             btn.innerText = "Mengunggah Laporan... (Mohon Tunggu)"; btn.disabled = true;
             try {
                 let payload = {
-                    tanggal: document.getElementById('tgl-pertemuan').value,
-                    jadwal_siswa: document.getElementById('select-siswa').value,
-                    kehadiran: document.getElementById('select-kehadiran').value,
-                    catatan: document.getElementById('catatan-guru').value,
+                    tanggal: document.getElementById('tgl-pertemuan').value, jadwal_siswa: document.getElementById('select-siswa').value,
+                    kehadiran: document.getElementById('select-kehadiran').value, catatan: document.getElementById('catatan-guru').value,
                     fileLaporan: null, fileMedia: []
                 };
                 let fileLap = document.getElementById('file-laporan').files[0];
@@ -609,25 +606,21 @@
                 alert(json.message || "Laporan berhasil dikirim!");
                 
                 document.getElementById('catatan-guru').value = ""; document.getElementById('file-laporan').value = ""; document.getElementById('file-media').value = "";
-            } catch (e) {
-                alert("Gagal mengunggah file. Pastikan ukuran file tidak terlalu besar.");
-            } finally {
-                btn.innerText = "Simpan & Kirim Laporan"; btn.disabled = false;
-            }
+            } catch (e) { alert("Gagal mengunggah file. Pastikan ukuran file tidak terlalu besar."); } 
+            finally { btn.innerText = "Simpan & Kirim Laporan"; btn.disabled = false; }
         }
 
-        // ==========================================
-        // UTILITIES
-        // ==========================================
         const formatDateForInput = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         
         window.onload = function() {
             const todayStr = formatDateForInput(new Date());
-            document.getElementById('tgl-pertemuan').value = todayStr;
-            document.getElementById('reg-tgl-masuk').value = todayStr;
-            document.getElementById('ui-login-title').value = document.getElementById('login-title-text').innerText;
-            document.getElementById('ui-login-hint').value = document.getElementById('login-hint-text').innerText;
-            document.getElementById('ui-app-title').value = document.getElementById('app-title-text').innerText;
+            document.getElementById('tgl-pertemuan').value = todayStr; document.getElementById('reg-tgl-masuk').value = todayStr;
+            
+            // Muat Tema Lokal Saja (Gelap/Terang)
+            const themeMode = localStorage.getItem('themeMode') || 'dark';
+            document.documentElement.setAttribute('data-theme', themeMode);
+            document.getElementById('bg-theme').value = themeMode;
+
             fetchDatabase();
         };
 
@@ -638,23 +631,12 @@
             event.currentTarget.classList.add('active');
         }
         function toggleThemePanel() { document.getElementById('theme-panel').classList.toggle('active'); }
-        function changeBackgroundMode() { document.documentElement.setAttribute('data-theme', document.getElementById('bg-theme').value); }
-        function changeAccentColor() { document.documentElement.style.setProperty('--accent', document.getElementById('color-picker').value); }
-        function simpanTampilanUI() {
-            document.getElementById('login-title-text').innerText = document.getElementById('ui-login-title').value;
-            document.getElementById('login-hint-text').innerText = document.getElementById('ui-login-hint').value;
-            document.getElementById('app-title-text').innerText = document.getElementById('ui-app-title').value;
-            const fileInput = document.getElementById('ui-app-logo');
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    document.querySelectorAll('.app-logo-img').forEach(logo => { logo.src = e.target.result; logo.style.display = 'block'; });
-                    document.getElementById('ui-logo-preview').src = e.target.result; document.getElementById('ui-logo-preview').style.display = 'block';
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            }
-            alert('Tampilan Lokal Diperbarui!');
+        function changeBackgroundMode() { 
+            const mode = document.getElementById('bg-theme').value;
+            document.documentElement.setAttribute('data-theme', mode);
+            localStorage.setItem('themeMode', mode); 
         }
+        function changeAccentColor() { document.documentElement.style.setProperty('--accent', document.getElementById('color-picker').value); }
     </script>
 </body>
 </html>
