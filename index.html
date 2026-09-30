@@ -146,7 +146,7 @@
                     <div class="form-group"><label>Nama Lengkap</label><input type="text" id="reg-nama" placeholder="Contoh: Anisa Rahma"></div>
                     <div class="form-group"><label>Asal Sekolah</label><input type="text" id="reg-sekolah" placeholder="Contoh: SMPN 1"></div>
                     <div class="form-group"><label>Usia (Tahun)</label><input type="number" id="reg-usia" placeholder="14"></div>
-                    <div class="form-group"><label>Program Kursus</label><select id="reg-program"><option>Matematika - Dasar</option><option>Inggris - Menengah</option><option>Fisika - Lanjut</option></select></div>
+                    <div class="form-group"><label>Program Kursus</label><select id="reg-program"><option>-- Menunggu Data --</option></select></div>
                     <div class="form-group"><label>Nama Orang Tua</label><input type="text" id="reg-ortu"></div>
                     <div class="form-group"><label>Tanggal Masuk</label><input type="date" id="reg-tgl-masuk"></div>
                     <div class="form-group"><label>Nomor Kontak Siswa (WA)</label><input type="tel" id="reg-wa-siswa"></div>
@@ -207,16 +207,21 @@
         // ==========================================
         const API_URL = "https://script.google.com/macros/s/AKfycbxhCQiLp4s4vmGzaUDWsoTqtYtRZcrD5KCp445kwJx5bOLPEDcEbFbJ62IJLH9KKunZOQ/exec";
 
-        const listProgram = ['Matematika - Dasar', 'Inggris - Menengah', 'Fisika - Lanjut', 'Biologi - Menengah'];
-
         // SKEMA DATABASE (KEY HARUS PERSIS SAMA DENGAN HEADER GOOGLE SHEETS)
         let dbSchema = {
             'jadwal': { sheet: 'Jadwal', judul: 'Kelola Jadwal', kolom: [{key: 'ID_Jadwal', label: 'ID Jadwal', type: 'text'}, {key: 'Siswa', label: 'Siswa', type: 'select', source: 'murid'}, {key: 'Program', label: 'Program Kursus', type: 'select', source: 'program'}, {key: 'Tanggal', label: 'Tanggal', type: 'date'}, {key: 'Jam_Mulai', label: 'Jam Mulai', type: 'time'}, {key: 'Jam_Selesai', label: 'Jam Selesai', type: 'time'}, {key: 'Guru', label: 'Guru', type: 'select', source: 'guru'}], data: [] },
             'murid': { sheet: 'Murid', judul: 'Kelola Data Murid', kolom: [{key: 'ID_Murid', label: 'ID Murid', type: 'text'}, {key: 'Nama', label: 'Nama Lengkap', type: 'text'}, {key: 'Asal_Sekolah', label: 'Asal Sekolah', type: 'text'}, {key: 'Program', label: 'Program Kursus', type: 'select', source:'program'}], data: [] },
             'guru': { sheet: 'Guru', judul: 'Kelola Data Guru', kolom: [{key: 'ID_Guru', label: 'ID Guru', type:'text'}, {key: 'Nama_Guru', label: 'Nama Guru', type:'text'}, {key: 'Spesialisasi', label: 'Spesialisasi', type:'text'}], data: [] },
-            'template': { sheet: 'Template', judul: 'Kelola Template Laporan', kolom: [{key: 'Program', label: 'Program', type:'select', source:'program'}, {key: 'Tautan_GDoc', label: 'Tautan G-Doc', type:'text'}], data: [] },
+            'template': { sheet: 'Template', judul: 'Kelola Template Laporan', kolom: [{key: 'Program', label: 'Program', type:'text'}, {key: 'Level', label: 'Level', type:'text'}, {key: 'Tautan_GDoc', label: 'Tautan G-Doc', type:'text'}], data: [] },
             'akun': { sheet: 'Akun', judul: 'Pengaturan Akun Akses', kolom: [{key: 'Username', label: 'Username', type:'text'}, {key: 'Password', label: 'Password', type:'text'}, {key: 'Role', label: 'Role (admin/guru)', type:'text'}], data: [] }
         };
+
+        // FUNGSI MENDAPATKAN LIST PROGRAM DINAMIS DARI TEMPLATE
+        function getProgramList() {
+            if(!dbSchema.template || !dbSchema.template.data) return [];
+            let programs = dbSchema.template.data.map(t => t.Program).filter(Boolean);
+            return [...new Set(programs)]; // Menghapus duplikat
+        }
 
         // MENGAMBIL DATA DARI GOOGLE SHEETS SAAT HALAMAN DIMUAT
         async function fetchDatabase() {
@@ -240,6 +245,7 @@
                 renderSettingTable('jadwal');
                 renderJadwal();
                 updateDropdownLaporan();
+                updateDropdownProgram(); // Update dropdown Program Kursus
 
             } catch (e) {
                 document.getElementById('login-title-text').innerText = "Gagal Terhubung (Offline)";
@@ -372,7 +378,7 @@
                     let optionsData = [];
                     if(k.source === 'murid') optionsData = dbSchema.murid.data.map(m => m.Nama);
                     else if(k.source === 'guru') optionsData = dbSchema.guru.data.map(g => g.Nama_Guru);
-                    else if(k.source === 'program') optionsData = listProgram;
+                    else if(k.source === 'program') optionsData = getProgramList(); // DINAMIS DARI TEMPLATE
 
                     optionsData.forEach(opt => {
                         let isSelected = (defaultValue === opt) ? 'selected' : '';
@@ -404,6 +410,9 @@
             if(activeSettingMenu === 'jadwal' || activeSettingMenu === 'murid') {
                 renderJadwal(); updateDropdownLaporan();
             }
+            if(activeSettingMenu === 'template') {
+                updateDropdownProgram(); // Jika template berubah, perbarui dropdown program
+            }
         }
 
         function deleteCrudData(index) {
@@ -411,7 +420,8 @@
                 dbSchema[activeSettingMenu].data.splice(index, 1);
                 renderSettingTable();
                 syncToGoogleSheets(activeSettingMenu);
-                if(activeSettingMenu === 'jadwal') { renderJadwal(); updateDropdownLaporan(); }
+                if(activeSettingMenu === 'jadwal' || activeSettingMenu === 'murid') { renderJadwal(); updateDropdownLaporan(); }
+                if(activeSettingMenu === 'template') updateDropdownProgram(); 
             }
         }
 
@@ -435,10 +445,20 @@
             });
 
             alert(`Berhasil! Data siswa ${nama} telah disimpan.`);
-            syncToGoogleSheets('murid'); // Simpan ke g-sheets
+            syncToGoogleSheets('murid'); 
 
             document.getElementById('reg-nama').value = '';
             document.getElementById('reg-sekolah').value = '';
+        }
+
+        function updateDropdownProgram() {
+            const selectReg = document.getElementById('reg-program');
+            if(selectReg) {
+                selectReg.innerHTML = '';
+                getProgramList().forEach(p => {
+                    selectReg.innerHTML += `<option value="${p}">${p}</option>`;
+                });
+            }
         }
 
         // ==========================================
