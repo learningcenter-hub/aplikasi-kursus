@@ -120,7 +120,7 @@
             <button class="tab-btn active" onclick="openTab('jadwal')">📅 Jadwal Hari Ini</button>
             <button class="tab-btn" onclick="openTab('laporan')">📤 Kirim Laporan</button>
             <button class="tab-btn" id="nav-siswa" onclick="openTab('siswa')">👤 Registrasi Siswa Baru</button>
-            <button class="tab-btn" id="nav-pengaturan" onclick="openTab('pengaturan')">⚙️️ Pengaturan Data</button>
+            <button class="tab-btn" id="nav-pengaturan" onclick="openTab('pengaturan')">⚙ Pengaturan Data</button>
         </div>
 
         <div id="jadwal" class="tab-content active"><div class="grid-container" id="jadwal-container"></div></div>
@@ -202,7 +202,7 @@
             <div id="modal-body" style="max-height: 60vh; overflow-y: auto; padding-right: 5px;"></div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeCrudModal()">Batal</button>
-                <button class="btn-primary" onclick="saveCrudData()">Simpan Data</button>
+                <button class="btn-primary" id="btn-modal-save" onclick="saveCrudData()">Simpan Data</button>
             </div>
         </div>
     </div>
@@ -237,11 +237,9 @@
                     if(json.data.template) dbSchema.template.data = json.data.template;
                     if(json.data.akun) dbSchema.akun.data = json.data.akun;
                     
-                    // MENANGANI DATA TAMPILAN GLOBAL
                     if(json.data.tampilan && json.data.tampilan.length > 0) {
                         dbSchema.tampilan.data = json.data.tampilan;
                     } else {
-                        // Default jika tab Tampilan di Google Sheets masih kosong
                         dbSchema.tampilan.data = [{ ID_Tampilan: 'UI-01', Judul_Login: 'Sistem Login', Hint_Login: 'Admin: admin/123 | Guru: guru/123', Judul_Aplikasi: 'Dashboard Manajemen Kursus', Warna_Aksen: '#3b82f6', Logo_Base64: '' }];
                     }
                     terapkanTampilanGlobal();
@@ -277,28 +275,22 @@
         }
 
         // ==========================================
-        // SISTEM TAMPILAN GLOBAL (BARU)
+        // SISTEM TAMPILAN GLOBAL
         // ==========================================
         function terapkanTampilanGlobal() {
             let ui = dbSchema.tampilan.data[0];
             if(!ui) return;
 
-            // Terapkan Judul
             document.getElementById('login-title-text').innerText = ui.Judul_Login || '';
             document.getElementById('ui-login-title').value = ui.Judul_Login || '';
-            
             document.getElementById('login-hint-text').innerText = ui.Hint_Login || '';
             document.getElementById('ui-login-hint').value = ui.Hint_Login || '';
-            
             document.getElementById('app-title-text').innerText = ui.Judul_Aplikasi || '';
             document.getElementById('html-title').innerText = ui.Judul_Aplikasi || 'Sistem Manajemen Kursus';
             document.getElementById('ui-app-title').value = ui.Judul_Aplikasi || '';
-
-            // Terapkan Warna (Hanya warna yang dikunci Global, Mode Tema tetap lokal)
             document.documentElement.style.setProperty('--accent', ui.Warna_Aksen || '#3b82f6');
             document.getElementById('color-picker').value = ui.Warna_Aksen || '#3b82f6';
 
-            // Terapkan Logo
             if(ui.Logo_Base64) {
                 document.querySelectorAll('.app-logo-img').forEach(logo => { logo.src = ui.Logo_Base64; logo.style.display = 'block'; });
                 document.getElementById('ui-logo-preview').src = ui.Logo_Base64;
@@ -310,14 +302,14 @@
             let img = new Image();
             img.src = base64Str;
             img.onload = function() {
-                if(img.height <= maxHeight) { callback(base64Str); return; } // Jangan diubah jika sudah kecil
+                if(img.height <= maxHeight) { callback(base64Str); return; } 
                 let canvas = document.createElement('canvas');
                 let ratio = maxHeight / img.height;
                 canvas.height = maxHeight;
                 canvas.width = img.width * ratio;
                 let ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                callback(canvas.toDataURL('image/jpeg', 0.8)); // Kompres menjadi jpeg kecil
+                callback(canvas.toDataURL('image/jpeg', 0.8)); 
             };
         }
 
@@ -332,7 +324,6 @@
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    // Kecilkan gambar agar tidak eror masuk Google Sheets
                     kompresGambar(e.target.result, 150, function(resizedBase64) {
                         ui.Logo_Base64 = resizedBase64;
                         dbSchema.tampilan.data[0] = ui;
@@ -425,14 +416,42 @@
             schema.data.forEach((row, index) => {
                 html += '<tr>';
                 visibleCols.forEach(k => html += `<td>${row[k.key] || ''}</td>`);
+                
+                // Tambahan Tombol Detail Khusus untuk Data Murid
+                let btnDetail = '';
+                if(activeSettingMenu === 'murid') {
+                    btnDetail = `<button class="btn-secondary" onclick="viewDetail(${index})" style="padding: 4px 8px; font-size: 11px; color: var(--success); border-color: var(--success);">Detail</button>`;
+                }
+
                 html += `
                     <td class="action-btns">
+                        ${btnDetail}
                         <button class="btn-secondary" onclick="openCrudModal('edit', ${index})" style="padding: 4px 8px; font-size: 11px;">Edit</button>
                         <button class="btn-danger" onclick="deleteCrudData(${index})">Hapus</button>
                     </td></tr>`;
             });
             html += '</tbody>';
             document.getElementById('setting-table').innerHTML = html;
+        }
+
+        // FUNGSI BARU UNTUK MELIHAT DETAIL DATA
+        function viewDetail(index) {
+            const schema = dbSchema[activeSettingMenu];
+            const data = schema.data[index];
+            const modalBody = document.getElementById('modal-body');
+            
+            document.getElementById('modal-title').innerText = `Detail: ${data.Nama || 'Data Siswa'}`;
+            
+            // Tampilan Grid 2 Kolom untuk Baca Data
+            let html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:10px;">';
+            schema.kolom.forEach(k => {
+                html += `<div><small style="color:var(--text-muted);">${k.label}</small><br><strong style="font-size:14px; word-break: break-all;">${data[k.key] || '-'}</strong></div>`;
+            });
+            html += '</div>';
+            
+            modalBody.innerHTML = html;
+            document.getElementById('btn-modal-save').style.display = 'none'; // Sembunyikan tombol simpan
+            document.getElementById('crud-modal').style.display = 'flex';
         }
 
         function openCrudModal(mode, index = -1) {
@@ -463,6 +482,8 @@
                 }
                 modalBody.innerHTML += `<div class="form-group"><label>${k.label}</label>${inputHTML}</div>`;
             });
+            
+            document.getElementById('btn-modal-save').style.display = 'inline-block'; // Tampilkan tombol simpan
             document.getElementById('crud-modal').style.display = 'flex';
         }
 
@@ -616,7 +637,6 @@
             const todayStr = formatDateForInput(new Date());
             document.getElementById('tgl-pertemuan').value = todayStr; document.getElementById('reg-tgl-masuk').value = todayStr;
             
-            // Muat Tema Lokal Saja (Gelap/Terang)
             const themeMode = localStorage.getItem('themeMode') || 'dark';
             document.documentElement.setAttribute('data-theme', themeMode);
             document.getElementById('bg-theme').value = themeMode;
