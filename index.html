@@ -67,6 +67,8 @@
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
         th { color: var(--text-muted); font-weight: normal; }
+        th.sortable { cursor: pointer; user-select: none; transition: color 0.2s; }
+        th.sortable:hover { color: var(--accent); }
         .action-btns { display: flex; gap: 8px; }
         
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-main); display: flex; justify-content: center; align-items: center; z-index: 1000; }
@@ -173,13 +175,17 @@
                 </div>
                 
                 <div class="settings-content">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                         <h3 id="setting-title" style="margin: 0;">Kelola Jadwal</h3>
-                        <div>
-                            <span id="sync-status" style="font-size:12px; color:var(--success); display:none; margin-right:10px;">Menyimpan... ⏳</span>
+                        
+                        <!-- KONTROL PENCARIAN & TOMBOL -->
+                        <div style="display: flex; align-items: center; gap: 10px;" id="setting-controls">
+                            <input type="text" id="search-input" placeholder="🔍 Cari nama siswa/data..." style="padding: 6px 10px; border-radius: 4px; font-size: 13px; width: 220px;" onkeyup="filterTable()">
+                            <span id="sync-status" style="font-size:12px; color:var(--success); display:none;">Menyimpan... ⏳</span>
                             <button class="btn-primary" id="btn-tambah-data" style="padding: 6px 12px; font-size: 13px;" onclick="openCrudModal('add')">+ Tambah Data</button>
                         </div>
                     </div>
+                    
                     <div id="setting-data-view"><table id="setting-table"></table></div>
 
                     <div id="setting-ui-view" style="display: none;">
@@ -218,6 +224,9 @@
             'akun': { sheet: 'Akun', judul: 'Pengaturan Akun Akses', kolom: [{key: 'Username', label: 'Username', type:'text'}, {key: 'Password', label: 'Password', type:'text'}, {key: 'Role', label: 'Role (admin/guru)', type:'text'}], data: [] },
             'tampilan': { sheet: 'Tampilan', judul: 'Pengaturan Tampilan', kolom: [], data: [] }
         };
+
+        let sortCol = '';
+        let sortAsc = true;
 
         function getProgramList() {
             if(!dbSchema.template || !dbSchema.template.data) return [];
@@ -274,9 +283,6 @@
             }
         }
 
-        // ==========================================
-        // SISTEM TAMPILAN GLOBAL
-        // ==========================================
         function terapkanTampilanGlobal() {
             let ui = dbSchema.tampilan.data[0];
             if(!ui) return;
@@ -327,23 +333,18 @@
                     kompresGambar(e.target.result, 150, function(resizedBase64) {
                         ui.Logo_Base64 = resizedBase64;
                         dbSchema.tampilan.data[0] = ui;
-                        terapkanTampilanGlobal();
-                        syncToGoogleSheets('tampilan');
+                        terapkanTampilanGlobal(); syncToGoogleSheets('tampilan');
                         alert('Tampilan Global Diperbarui!');
                     });
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
                 dbSchema.tampilan.data[0] = ui;
-                terapkanTampilanGlobal();
-                syncToGoogleSheets('tampilan');
+                terapkanTampilanGlobal(); syncToGoogleSheets('tampilan');
                 alert('Tampilan Global Diperbarui!');
             }
         }
 
-        // ==========================================
-        // SISTEM LOGIN & CRUD
-        // ==========================================
         let currentUserRole = ''; 
         function handleLogin() {
             const user = document.getElementById('login-user').value;
@@ -392,15 +393,67 @@
             
             const dataView = document.getElementById('setting-data-view');
             const uiView = document.getElementById('setting-ui-view');
-            const btnTambah = document.getElementById('btn-tambah-data');
+            const controls = document.getElementById('setting-controls');
+
+            // Hapus isi pencarian saat pindah tab
+            document.getElementById('search-input').value = '';
 
             if (menu === 'tampilan') {
                 document.getElementById('setting-title').innerText = 'Kustomisasi Tampilan Aplikasi';
-                dataView.style.display = 'none'; btnTambah.style.display = 'none'; uiView.style.display = 'block';
+                dataView.style.display = 'none'; controls.style.display = 'none'; uiView.style.display = 'block';
             } else {
-                dataView.style.display = 'block'; btnTambah.style.display = 'block'; uiView.style.display = 'none';
+                activeSettingMenu = menu; sortCol = ''; 
+                dataView.style.display = 'block'; controls.style.display = 'flex'; uiView.style.display = 'none';
                 renderSettingTable(menu);
             }
+        }
+
+        // FUNGSI PENCARIAN (FILTERING)
+        function filterTable() {
+            let input = document.getElementById("search-input").value.toLowerCase();
+            let table = document.getElementById("setting-table");
+            let tr = table.getElementsByTagName("tr");
+
+            // Mulai dari i=1 agar tidak menyembunyikan header tabel
+            for (let i = 1; i < tr.length; i++) {
+                let tdArray = tr[i].getElementsByTagName("td");
+                let matchFound = false;
+                
+                // Cari kecocokan teks di semua kolom kecuali kolom Aksi (terakhir)
+                for (let j = 0; j < tdArray.length - 1; j++) {
+                    if (tdArray[j]) {
+                        if (tdArray[j].innerText.toLowerCase().indexOf(input) > -1) {
+                            matchFound = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = matchFound ? "" : "none";
+            }
+        }
+
+        // FUNGSI SORTING (PENGURUTAN KLIK HEADER)
+        function sortTable(key) {
+            if (sortCol === key) sortAsc = !sortAsc; 
+            else { sortCol = key; sortAsc = true; }
+
+            dbSchema[activeSettingMenu].data.sort((a, b) => {
+                let valA = a[key] ? String(a[key]).toLowerCase() : '';
+                let valB = b[key] ? String(b[key]).toLowerCase() : '';
+
+                if(!isNaN(Date.parse(valA)) && !isNaN(Date.parse(valB))) {
+                    valA = new Date(valA).getTime(); valB = new Date(valB).getTime();
+                } else if (!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') {
+                    valA = parseFloat(valA); valB = parseFloat(valB);
+                }
+
+                if (valA < valB) return sortAsc ? -1 : 1;
+                if (valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
+            renderSettingTable();
+            // Terapkan ulang pencarian jika ada teks yang sedang dicari
+            filterTable();
         }
 
         function renderSettingTable(menu) {
@@ -410,14 +463,18 @@
             
             let html = '<thead><tr>';
             let visibleCols = schema.kolom.slice(0, 5);
-            visibleCols.forEach(k => html += `<th>${k.label}</th>`);
+            
+            visibleCols.forEach(k => {
+                let icon = '';
+                if(sortCol === k.key) { icon = sortAsc ? ' <small style="color:var(--accent);">▲</small>' : ' <small style="color:var(--accent);">▼</small>'; }
+                html += `<th class="sortable" onclick="sortTable('${k.key}')" title="Klik untuk mengurutkan">${k.label}${icon}</th>`;
+            });
             html += '<th>Aksi</th></tr></thead><tbody>';
 
             schema.data.forEach((row, index) => {
                 html += '<tr>';
                 visibleCols.forEach(k => html += `<td>${row[k.key] || ''}</td>`);
                 
-                // Tambahan Tombol Detail Khusus untuk Data Murid
                 let btnDetail = '';
                 if(activeSettingMenu === 'murid') {
                     btnDetail = `<button class="btn-secondary" onclick="viewDetail(${index})" style="padding: 4px 8px; font-size: 11px; color: var(--success); border-color: var(--success);">Detail</button>`;
@@ -434,7 +491,6 @@
             document.getElementById('setting-table').innerHTML = html;
         }
 
-        // FUNGSI BARU UNTUK MELIHAT DETAIL DATA
         function viewDetail(index) {
             const schema = dbSchema[activeSettingMenu];
             const data = schema.data[index];
@@ -442,7 +498,6 @@
             
             document.getElementById('modal-title').innerText = `Detail: ${data.Nama || 'Data Siswa'}`;
             
-            // Tampilan Grid 2 Kolom untuk Baca Data
             let html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:10px;">';
             schema.kolom.forEach(k => {
                 html += `<div><small style="color:var(--text-muted);">${k.label}</small><br><strong style="font-size:14px; word-break: break-all;">${data[k.key] || '-'}</strong></div>`;
@@ -450,7 +505,7 @@
             html += '</div>';
             
             modalBody.innerHTML = html;
-            document.getElementById('btn-modal-save').style.display = 'none'; // Sembunyikan tombol simpan
+            document.getElementById('btn-modal-save').style.display = 'none'; 
             document.getElementById('crud-modal').style.display = 'flex';
         }
 
@@ -483,7 +538,7 @@
                 modalBody.innerHTML += `<div class="form-group"><label>${k.label}</label>${inputHTML}</div>`;
             });
             
-            document.getElementById('btn-modal-save').style.display = 'inline-block'; // Tampilkan tombol simpan
+            document.getElementById('btn-modal-save').style.display = 'inline-block'; 
             document.getElementById('crud-modal').style.display = 'flex';
         }
 
