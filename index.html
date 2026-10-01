@@ -125,7 +125,18 @@
             <button class="tab-btn" id="nav-pengaturan" onclick="openTab('pengaturan')">⚙ Pengaturan Data</button>
         </div>
 
-        <div id="jadwal" class="tab-content active"><div class="grid-container" id="jadwal-container"></div></div>
+        <!-- TAB 1: JADWAL & FILTER GURU -->
+        <div id="jadwal" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: var(--text-muted);">Daftar Jadwal Kelas</h3>
+                <div id="jadwal-filter-container" style="display: none;">
+                    <select id="filter-guru-dashboard" onchange="renderJadwal()" style="padding: 6px; border-radius: 4px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border);">
+                        <option value="Semua">-- Tampilkan Semua Guru --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid-container" id="jadwal-container"></div>
+        </div>
 
         <div id="laporan" class="tab-content">
             <div class="form-container">
@@ -187,8 +198,20 @@
                     
                     <div id="setting-data-view"><table id="setting-table"></table></div>
 
+                    <!-- KUSTOMISASI TAMPILAN GLOBAL -->
                     <div id="setting-ui-view" style="display: none;">
                         <p style="color:var(--text-muted); font-size:13px; margin-top:0;">(Pengaturan ini akan diterapkan secara Global untuk semua pengguna yang mengakses aplikasi ini).</p>
+                        
+                        <!-- PENGATURAN AKSES GURU -->
+                        <div class="form-group" style="padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 20px;">
+                            <label style="color: var(--accent); font-weight: bold; font-size: 14px;">Hak Akses Guru di Jadwal Hari Ini</label>
+                            <select id="ui-akses-jadwal" style="margin-top: 8px; width: 100%;">
+                                <option value="Semua">Bisa Melihat Jadwal Semua Guru</option>
+                                <option value="Pribadi">Hanya Bisa Melihat Jadwalnya Sendiri</option>
+                            </select>
+                            <small style="color: var(--text-muted); margin-top: 4px;">Pilih apakah guru bisa melihat seluruh daftar, atau dibatasi privasi.</small>
+                        </div>
+
                         <div class="form-group"><label>Judul Layar Login</label><input type="text" id="ui-login-title"></div>
                         <div class="form-group"><label>Teks Bantuan Login (Hint)</label><input type="text" id="ui-login-hint"></div>
                         <div class="form-group"><label>Judul Dashboard (Kiri Atas)</label><input type="text" id="ui-app-title"></div>
@@ -220,20 +243,20 @@
             'murid': { sheet: 'Murid', judul: 'Kelola Data Murid', kolom: [{key: 'ID_Murid', label: 'ID Murid', type: 'text'}, {key: 'Nama', label: 'Nama Lengkap', type: 'text'}, {key: 'Asal_Sekolah', label: 'Asal Sekolah', type: 'text'}, {key: 'Usia', label: 'Usia', type: 'number'}, {key: 'Program', label: 'Program Kursus', type: 'select', source:'program'}, {key: 'Nama_Ortu', label: 'Nama Orang Tua', type: 'text'}, {key: 'Tgl_Masuk', label: 'Tanggal Masuk', type: 'date'}, {key: 'WA_Siswa', label: 'WA Siswa', type: 'text'}, {key: 'WA_Ortu', label: 'WA Orang Tua', type: 'text'}, {key: 'Hari_Default', label: 'Hari Kursus', type: 'text'}, {key: 'Jam_Mulai', label: 'Jam Mulai', type: 'time'}, {key: 'Jam_Selesai', label: 'Jam Selesai', type: 'time'}], data: [] },
             'guru': { sheet: 'Guru', judul: 'Kelola Data Guru', kolom: [{key: 'ID_Guru', label: 'ID Guru', type:'text'}, {key: 'Nama_Guru', label: 'Nama Guru', type:'text'}, {key: 'Spesialisasi', label: 'Spesialisasi', type:'text'}], data: [] },
             'template': { sheet: 'Template', judul: 'Kelola Template Laporan', kolom: [{key: 'Program', label: 'Program', type:'text'}, {key: 'Level', label: 'Level', type:'text'}, {key: 'Tautan_GDoc', label: 'Tautan G-Doc', type:'text'}], data: [] },
-            'akun': { sheet: 'Akun', judul: 'Pengaturan Akun Akses', kolom: [{key: 'Username', label: 'Username', type:'text'}, {key: 'Password', label: 'Password', type:'text'}, {key: 'Role', label: 'Role (admin/guru)', type:'text'}], data: [] },
+            // KOLOM BARU PADA AKUN: Nama_Terkait
+            'akun': { sheet: 'Akun', judul: 'Pengaturan Akun Akses', kolom: [{key: 'Username', label: 'Username', type:'text'}, {key: 'Password', label: 'Password', type:'text'}, {key: 'Role', label: 'Role (admin/guru)', type:'text'}, {key: 'Nama_Terkait', label: 'Link Data Guru', type:'select', source:'guru'}], data: [] },
             'tampilan': { sheet: 'Tampilan', judul: 'Pengaturan Tampilan', kolom: [], data: [] }
         };
 
         let sortCol = ''; let sortAsc = true;
+        let currentUserRole = ''; 
+        let currentUserNameTerkait = ''; 
 
-        // FITUR BARU: MENGGABUNGKAN PROGRAM DAN LEVEL
         function getProgramList() {
             if(!dbSchema.template || !dbSchema.template.data) return [];
             let programs = dbSchema.template.data.map(t => {
-                // Jika Level diisi, gabungkan. Jika kosong, tampilkan hanya Program.
                 if (t.Program && t.Level) return `${t.Program} - ${t.Level}`;
-                if (t.Program) return t.Program;
-                return '';
+                if (t.Program) return t.Program; return '';
             }).filter(Boolean);
             return [...new Set(programs)];
         }
@@ -250,7 +273,7 @@
                     if(json.data.template) dbSchema.template.data = json.data.template;
                     if(json.data.akun) dbSchema.akun.data = json.data.akun;
                     if(json.data.tampilan && json.data.tampilan.length > 0) dbSchema.tampilan.data = json.data.tampilan;
-                    else dbSchema.tampilan.data = [{ ID_Tampilan: 'UI-01', Judul_Login: 'Sistem Login', Hint_Login: 'Admin: admin/123 | Guru: guru/123', Judul_Aplikasi: 'Dashboard Manajemen Kursus', Warna_Aksen: '#3b82f6', Logo_Base64: '' }];
+                    else dbSchema.tampilan.data = [{ ID_Tampilan: 'UI-01', Judul_Login: 'Sistem Login', Hint_Login: 'Admin: admin/123 | Guru: guru/123', Judul_Aplikasi: 'Dashboard Manajemen Kursus', Warna_Aksen: '#3b82f6', Logo_Base64: '', Akses_Jadwal: 'Semua' }];
                     
                     terapkanTampilanGlobal();
                 }
@@ -258,8 +281,12 @@
                 document.getElementById('btn-login').innerText = "Masuk";
                 document.getElementById('btn-login').disabled = false;
                 
-                renderSettingTable('jadwal'); renderJadwal();
-                updateDropdownLaporan(); updateDropdownProgram(); 
+                updateFilterGuru(); 
+                renderSettingTable('jadwal'); 
+                renderJadwal();
+                updateDropdownLaporan(); 
+                updateDropdownProgram(); 
+
             } catch (e) {
                 document.getElementById('login-title-text').innerText = "Gagal Terhubung (Offline)";
                 document.getElementById('login-hint-text').innerText = "Cek koneksi internet Anda lalu refresh halaman.";
@@ -288,6 +315,8 @@
             document.getElementById('app-title-text').innerText = ui.Judul_Aplikasi || ''; document.getElementById('html-title').innerText = ui.Judul_Aplikasi || 'Sistem Manajemen Kursus';
             document.getElementById('ui-app-title').value = ui.Judul_Aplikasi || '';
             document.documentElement.style.setProperty('--accent', ui.Warna_Aksen || '#3b82f6'); document.getElementById('color-picker').value = ui.Warna_Aksen || '#3b82f6';
+            document.getElementById('ui-akses-jadwal').value = ui.Akses_Jadwal || 'Semua';
+
             if(ui.Logo_Base64) {
                 document.querySelectorAll('.app-logo-img').forEach(logo => { logo.src = ui.Logo_Base64; logo.style.display = 'block'; });
                 document.getElementById('ui-logo-preview').src = ui.Logo_Base64; document.getElementById('ui-logo-preview').style.display = 'block';
@@ -309,6 +338,7 @@
             let ui = dbSchema.tampilan.data[0] || { ID_Tampilan: 'UI-01' };
             ui.Judul_Login = document.getElementById('ui-login-title').value; ui.Hint_Login = document.getElementById('ui-login-hint').value;
             ui.Judul_Aplikasi = document.getElementById('ui-app-title').value; ui.Warna_Aksen = document.getElementById('color-picker').value;
+            ui.Akses_Jadwal = document.getElementById('ui-akses-jadwal').value;
 
             const fileInput = document.getElementById('ui-app-logo');
             if (fileInput.files && fileInput.files[0]) {
@@ -317,30 +347,34 @@
                     kompresGambar(e.target.result, 150, function(resizedBase64) {
                         ui.Logo_Base64 = resizedBase64; dbSchema.tampilan.data[0] = ui;
                         terapkanTampilanGlobal(); syncToGoogleSheets('tampilan'); alert('Tampilan Global Diperbarui!');
+                        renderJadwal(); // Update tampilan jika ada perubahan hak akses
                     });
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
                 dbSchema.tampilan.data[0] = ui; terapkanTampilanGlobal(); syncToGoogleSheets('tampilan'); alert('Tampilan Global Diperbarui!');
+                renderJadwal();
             }
         }
 
-        let currentUserRole = ''; 
         function handleLogin() {
             const user = document.getElementById('login-user').value; const pass = document.getElementById('login-pass').value;
             const err = document.getElementById('login-error');
             let validUser = dbSchema.akun.data.find(u => u.Username === user && String(u.Password) === pass);
-            if(validUser) loginSuccess(validUser.Role);
-            else if (user === 'admin' && pass === '123') loginSuccess('admin');
+            if(validUser) loginSuccess(validUser);
+            else if (user === 'admin' && pass === '123') loginSuccess({Role: 'admin', Nama_Terkait: ''});
             else err.style.display = 'block';
         }
 
-        function loginSuccess(role) {
-            currentUserRole = role.toLowerCase();
+        function loginSuccess(akunObj) {
+            currentUserRole = akunObj.Role.toLowerCase();
+            currentUserNameTerkait = akunObj.Nama_Terkait || '';
+
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-content').style.display = 'block';
             const navSiswa = document.getElementById('nav-siswa'); const navPengaturan = document.getElementById('nav-pengaturan'); const userDisplay = document.getElementById('user-display');
+            
             if(currentUserRole === 'guru') {
-                navSiswa.style.display = 'none'; navPengaturan.style.display = 'none'; userDisplay.innerHTML = '👨‍‍🏫 Guru'; openTab('jadwal');
+                navSiswa.style.display = 'none'; navPengaturan.style.display = 'none'; userDisplay.innerHTML = `👨‍‍🏫 ${currentUserNameTerkait || 'Guru'}`; openTab('jadwal');
             } else {
                 navSiswa.style.display = 'inline-block'; navPengaturan.style.display = 'inline-block'; userDisplay.innerHTML = '👨‍💻 Admin';
             }
@@ -348,7 +382,7 @@
         }
 
         function handleLogout() {
-            currentUserRole = '';
+            currentUserRole = ''; currentUserNameTerkait = '';
             document.getElementById('login-user').value = ''; document.getElementById('login-pass').value = ''; document.getElementById('login-error').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app-content').style.display = 'none';
         }
@@ -449,13 +483,16 @@
                 let defaultValue = mode === 'edit' ? (schema.data[index][k.key] || '') : '';
                 let inputHTML = '';
                 if(k.type === 'select') {
-                    inputHTML = `<select id="input-${k.key}">`; let optionsData = [];
-                    if(k.source === 'murid') optionsData = dbSchema.murid.data.map(m => m.Nama);
-                    else if(k.source === 'guru') optionsData = dbSchema.guru.data.map(g => g.Nama_Guru);
-                    else if(k.source === 'program') optionsData = getProgramList(); 
+                    inputHTML = `<select id="input-${k.key}">`; 
+                    let optionsData = ['']; // Tambahkan opsi kosong
+                    if(k.source === 'murid') optionsData = optionsData.concat(dbSchema.murid.data.map(m => m.Nama));
+                    else if(k.source === 'guru') optionsData = optionsData.concat(dbSchema.guru.data.map(g => g.Nama_Guru));
+                    else if(k.source === 'program') optionsData = optionsData.concat(getProgramList()); 
+                    
                     optionsData.forEach(opt => {
                         let isSelected = (defaultValue === opt) ? 'selected' : '';
-                        inputHTML += `<option value="${opt}" ${isSelected}>${opt}</option>`;
+                        let labelOpt = opt === '' ? '-- Pilih --' : opt;
+                        inputHTML += `<option value="${opt}" ${isSelected}>${labelOpt}</option>`;
                     });
                     inputHTML += `</select>`;
                 } else { inputHTML = `<input type="${k.type}" id="input-${k.key}" value="${defaultValue}">`; }
@@ -476,6 +513,7 @@
             closeCrudModal(); renderSettingTable(); syncToGoogleSheets(activeSettingMenu);
             if(activeSettingMenu === 'jadwal' || activeSettingMenu === 'murid') { renderJadwal(); updateDropdownLaporan(); }
             if(activeSettingMenu === 'template') { updateDropdownProgram(); }
+            if(activeSettingMenu === 'guru') { updateFilterGuru(); }
         }
 
         function deleteCrudData(index) {
@@ -484,6 +522,7 @@
                 renderSettingTable(); syncToGoogleSheets(activeSettingMenu);
                 if(activeSettingMenu === 'jadwal' || activeSettingMenu === 'murid') { renderJadwal(); updateDropdownLaporan(); }
                 if(activeSettingMenu === 'template') updateDropdownProgram(); 
+                if(activeSettingMenu === 'guru') updateFilterGuru(); 
             }
         }
 
@@ -512,6 +551,17 @@
             if(selectReg) { selectReg.innerHTML = ''; getProgramList().forEach(p => { selectReg.innerHTML += `<option value="${p}">${p}</option>`; }); }
         }
 
+        function updateFilterGuru() {
+            const filter = document.getElementById('filter-guru-dashboard');
+            if(!filter) return;
+            filter.innerHTML = '<option value="Semua">-- Tampilkan Semua Guru --</option>';
+            if(dbSchema.guru && dbSchema.guru.data) {
+                dbSchema.guru.data.forEach(g => {
+                    if(g.Nama_Guru) filter.innerHTML += `<option value="${g.Nama_Guru}">${g.Nama_Guru}</option>`;
+                });
+            }
+        }
+
         function checkStatus(dateStr, startStr, endStr) {
             const now = new Date(); const startDT = new Date(`${dateStr}T${startStr}:00`); const endDT = new Date(`${dateStr}T${endStr}:00`);
             if(isNaN(startDT.getTime())) return { label: 'Terjadwal', css: 'status-berlangsung' };
@@ -520,17 +570,44 @@
             return { label: 'Mendatang', css: 'status-mendatang' };
         }
 
+        // LOGIKA PENAMPILAN JADWAL (HAK AKSES & FILTER)
         function renderJadwal() {
             const container = document.getElementById('jadwal-container'); container.innerHTML = ''; 
-            if(dbSchema.jadwal.data.length === 0) { container.innerHTML = '<p style="color:var(--text-muted);">Belum ada jadwal. Tambahkan melalui tab Pengaturan Data.</p>'; return; }
+            
+            let ui = dbSchema.tampilan.data[0] || {};
+            let aksesGuru = ui.Akses_Jadwal || 'Semua';
+            let filterDropdown = document.getElementById('filter-guru-dashboard').value;
+            let filterContainer = document.getElementById('jadwal-filter-container');
 
-            dbSchema.jadwal.data.forEach(s => {
+            let jadwalToRender = dbSchema.jadwal.data;
+
+            if (currentUserRole === 'guru') {
+                if (aksesGuru === 'Pribadi') {
+                    jadwalToRender = jadwalToRender.filter(j => j.Guru === currentUserNameTerkait);
+                    filterContainer.style.display = 'none'; // Sembunyikan filter karena hanya bisa lihat miliknya
+                } else {
+                    filterContainer.style.display = 'block';
+                    if(filterDropdown !== 'Semua') jadwalToRender = jadwalToRender.filter(j => j.Guru === filterDropdown);
+                }
+            } else if (currentUserRole === 'admin') {
+                filterContainer.style.display = 'block';
+                if(filterDropdown !== 'Semua') jadwalToRender = jadwalToRender.filter(j => j.Guru === filterDropdown);
+            } else {
+                // Jika belum login, sembunyikan semua saja
+                return;
+            }
+
+            if(jadwalToRender.length === 0) { 
+                container.innerHTML = '<p style="color:var(--text-muted);">Tidak ada jadwal untuk kriteria ini.</p>'; return; 
+            }
+
+            jadwalToRender.forEach(s => {
                 const status = checkStatus(s.Tanggal, s.Jam_Mulai, s.Jam_Selesai);
                 container.innerHTML += `
                     <div class="card">
                         <div class="card-header"><span>${s.ID_Jadwal || '-'}</span><span class="status-badge ${status.css}">${status.label}</span></div>
                         <h3 class="student-name">${s.Siswa || 'Tanpa Nama'}</h3>
-                        <p class="course-info">${s.Program || '-'}</p> <!-- BAGIAN INI AKAN MENAMPILKAN PROGRAM DAN LEVEL -->
+                        <p class="course-info">${s.Program || '-'}</p>
                         <div class="card-date">📅 ${s.Tanggal || '-'}</div>
                         <div class="card-footer" style="margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
                             <span>👤 ${s.Guru || '-'}</span><span>🕒 ${s.Jam_Mulai || ''} - ${s.Jam_Selesai || ''}</span>
@@ -541,17 +618,24 @@
 
         function updateDropdownLaporan() {
             const select = document.getElementById('select-siswa'); select.innerHTML = '<option value="">-- Pilih Jadwal Siswa --</option>';
-            dbSchema.jadwal.data.forEach(j => { select.innerHTML += `<option value="${j.ID_Jadwal}">${j.ID_Jadwal} - ${j.Siswa} (${j.Tanggal})</option>`; });
+            // Guru hanya bisa memilih jadwal miliknya jika pengaturannya Pribadi
+            let jadwalLaporan = dbSchema.jadwal.data;
+            let ui = dbSchema.tampilan.data[0] || {};
+            if (currentUserRole === 'guru' && ui.Akses_Jadwal === 'Pribadi') {
+                jadwalLaporan = jadwalLaporan.filter(j => j.Guru === currentUserNameTerkait);
+            }
+            
+            jadwalLaporan.forEach(j => { 
+                select.innerHTML += `<option value="${j.ID_Jadwal}">${j.ID_Jadwal} - ${j.Siswa} (${j.Tanggal})</option>`; 
+            });
         }
 
-        // FITUR BARU: PENYESUAIAN PENCARIAN TEMPLATE BERDASARKAN GABUNGAN PROGRAM+LEVEL
         function updateTemplateBtn() {
             const idJadwal = document.getElementById('select-siswa').value; const btn = document.getElementById('btn-template');
             if(!idJadwal) { btn.innerText = 'Download Template Laporan'; btn.onclick = () => alert('Pilih Jadwal Siswa terlebih dahulu!'); return; }
             
             let jadwal = dbSchema.jadwal.data.find(j => j.ID_Jadwal === idJadwal);
             if(jadwal && jadwal.Program) {
-                // Mencari template yang nama "Program + Level"-nya sama dengan jadwal.Program
                 let template = dbSchema.template.data.find(t => {
                     let combined = (t.Program && t.Level) ? `${t.Program} - ${t.Level}` : t.Program;
                     return combined === jadwal.Program;
