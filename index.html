@@ -125,7 +125,6 @@
             <button class="tab-btn" id="nav-pengaturan" onclick="openTab('pengaturan')">⚙ Pengaturan Data</button>
         </div>
 
-        <!-- TAB 1: JADWAL & FILTER GURU -->
         <div id="jadwal" class="tab-content active">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: var(--text-muted);">Daftar Jadwal Kelas</h3>
@@ -198,13 +197,11 @@
                         </div>
                     </div>
                     
-                    <div id="setting-data-view"><table id="setting-table"></table></div>
+                    <div id="setting-data-view" style="overflow-x: auto;"><table id="setting-table"></table></div>
 
-                    <!-- KUSTOMISASI TAMPILAN GLOBAL -->
                     <div id="setting-ui-view" style="display: none;">
                         <p style="color:var(--text-muted); font-size:13px; margin-top:0;">(Pengaturan ini akan diterapkan secara Global untuk semua pengguna yang mengakses aplikasi ini).</p>
                         
-                        <!-- PENGATURAN AKSES GURU -->
                         <div class="form-group" style="padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border: 1px solid var(--accent); margin-bottom: 20px;">
                             <label style="color: var(--accent); font-weight: bold; font-size: 14px;">Hak Akses Guru di Jadwal Hari Ini</label>
                             <select id="ui-akses-jadwal" style="margin-top: 8px; width: 100%;">
@@ -440,7 +437,11 @@
             const schema = dbSchema[activeSettingMenu];
             document.getElementById('setting-title').innerText = schema.judul;
             
-            let html = '<thead><tr>'; let visibleCols = schema.kolom.slice(0, 5);
+            let html = '<thead><tr>'; 
+            
+            // FUNGSI BARU: JIKA BUKAN TABEL MURID, TAMPILKAN SELURUH KOLOM. JIKA MURID, BATASI 5.
+            let visibleCols = activeSettingMenu === 'murid' ? schema.kolom.slice(0, 5) : schema.kolom;
+            
             visibleCols.forEach(k => {
                 let icon = '';
                 if(sortCol === k.key) { icon = sortAsc ? ' <small style="color:var(--accent);">▲</small>' : ' <small style="color:var(--accent);">▼</small>'; }
@@ -638,6 +639,7 @@
                     let combined = (t.Program && t.Level) ? `${t.Program} - ${t.Level}` : t.Program;
                     return combined === jadwal.Program;
                 });
+                
                 if(template && template.Tautan_GDoc) {
                     btn.innerText = `⬇️ Download Template ${jadwal.Program}`; btn.onclick = () => window.open(template.Tautan_GDoc, '_blank');
                 } else {
@@ -666,7 +668,8 @@
 
                 let payload = {
                     tanggal: document.getElementById('tgl-pertemuan').value, 
-                    jadwal_siswa: idJadwal, nama_siswa: namaSiswa, 
+                    jadwal_siswa: idJadwal, 
+                    nama_siswa: namaSiswa, 
                     kehadiran: document.getElementById('select-kehadiran').value, 
                     catatan: document.getElementById('catatan-guru').value,
                     fileLaporan: null, fileMedia: []
