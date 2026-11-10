@@ -47,8 +47,9 @@
         .course-info { font-size: 14px; color: var(--accent); margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
         .card-date { font-size: 13px; font-weight: bold; margin-top: 5px; }
         
-        .scrollable-link { max-width: 250px; overflow-x: auto; white-space: nowrap; padding-bottom: 4px; scrollbar-width: thin; }
-        .card-link-container { margin-top: 8px; padding: 8px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 4px; font-size: 12px; max-width: 100%; overflow-x: auto; white-space: nowrap; scrollbar-width: thin; }
+        /* SCROLL VERTIKAL UNTUK LINK */
+        .scrollable-link { max-width: 250px; max-height: 60px; overflow-y: auto; overflow-x: hidden; white-space: normal; word-break: break-all; padding-right: 5px; scrollbar-width: thin; }
+        .card-link-container { margin-top: 8px; padding: 8px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 4px; font-size: 12px; max-height: 65px; overflow-y: auto; overflow-x: hidden; white-space: normal; word-break: break-all; scrollbar-width: thin; }
         
         .card-footer { display: flex; justify-content: space-between; margin-top: 5px; font-size: 13px; color: var(--text-muted); }
 
@@ -75,7 +76,7 @@
         .settings-sidebar button:hover, .settings-sidebar button.active { background-color: var(--bg-card); color: var(--text-main); border-left: 3px solid var(--accent); }
         .settings-content { flex-grow: 1; background-color: var(--bg-card); padding: 20px; border-radius: 8px; overflow-x: auto; min-height: 400px; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
         th { color: var(--text-muted); font-weight: normal; }
         th.sortable { cursor: pointer; user-select: none; transition: color 0.2s; }
         th.sortable:hover { color: var(--accent); }
@@ -147,6 +148,7 @@
             <div class="grid-container" id="jadwal-container"></div>
         </div>
 
+        <!-- Bagian Form Laporan & Siswa tetap sama persis -->
         <div id="laporan" class="tab-content">
             <div class="form-container">
                 <h3 style="margin-top: 0;">Formulir Laporan Evaluasi</h3>
@@ -295,6 +297,13 @@
                 updateDropdownLaporan(); 
                 updateDropdownProgram(); 
 
+                // CEK SESI LOGIN (Mencegah terlempar logout saat refresh)
+                let savedSession = localStorage.getItem('userSession');
+                if (savedSession) {
+                    let parsedSession = JSON.parse(savedSession);
+                    loginSuccess(parsedSession, false); // false = jangan timpa storage lagi
+                }
+
             } catch (e) {
                 document.getElementById('login-title-text').innerText = "Gagal Terhubung (Offline)";
                 document.getElementById('login-hint-text').innerText = "Cek koneksi internet Anda lalu refresh halaman.";
@@ -331,52 +340,22 @@
             }
         }
 
-        function kompresGambar(base64Str, maxHeight, callback) {
-            let img = new Image(); img.src = base64Str;
-            img.onload = function() {
-                if(img.height <= maxHeight) { callback(base64Str); return; } 
-                let canvas = document.createElement('canvas'); let ratio = maxHeight / img.height;
-                canvas.height = maxHeight; canvas.width = img.width * ratio;
-                let ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                callback(canvas.toDataURL('image/jpeg', 0.8)); 
-            };
-        }
-
-        function simpanTampilanGlobal() {
-            let ui = dbSchema.tampilan.data[0] || { ID_Tampilan: 'UI-01' };
-            ui.Judul_Login = document.getElementById('ui-login-title').value; ui.Hint_Login = document.getElementById('ui-login-hint').value;
-            ui.Judul_Aplikasi = document.getElementById('ui-app-title').value; ui.Warna_Aksen = document.getElementById('color-picker').value;
-            ui.Akses_Jadwal = document.getElementById('ui-akses-jadwal').value;
-
-            const fileInput = document.getElementById('ui-app-logo');
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    kompresGambar(e.target.result, 150, function(resizedBase64) {
-                        ui.Logo_Base64 = resizedBase64; dbSchema.tampilan.data[0] = ui;
-                        terapkanTampilanGlobal(); syncToGoogleSheets('tampilan'); alert('Tampilan Global Diperbarui!');
-                        renderJadwal(); 
-                    });
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                dbSchema.tampilan.data[0] = ui; terapkanTampilanGlobal(); syncToGoogleSheets('tampilan'); alert('Tampilan Global Diperbarui!');
-                renderJadwal();
-            }
-        }
-
         function handleLogin() {
             const user = document.getElementById('login-user').value; const pass = document.getElementById('login-pass').value;
             const err = document.getElementById('login-error');
             let validUser = dbSchema.akun.data.find(u => u.Username === user && String(u.Password) === pass);
-            if(validUser) loginSuccess(validUser);
-            else if (user === 'admin' && pass === '123') loginSuccess({Role: 'admin', Nama_Terkait: ''});
+            if(validUser) loginSuccess(validUser, true);
+            else if (user === 'admin' && pass === '123') loginSuccess({Role: 'admin', Nama_Terkait: ''}, true);
             else err.style.display = 'block';
         }
 
-        function loginSuccess(akunObj) {
+        function loginSuccess(akunObj, saveSession = true) {
             currentUserRole = akunObj.Role.toLowerCase();
             currentUserNameTerkait = akunObj.Nama_Terkait || '';
+
+            if (saveSession) {
+                localStorage.setItem('userSession', JSON.stringify(akunObj));
+            }
 
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-content').style.display = 'block';
             const navSiswa = document.getElementById('nav-siswa'); const navPengaturan = document.getElementById('nav-pengaturan'); const userDisplay = document.getElementById('user-display');
@@ -390,6 +369,7 @@
         }
 
         function handleLogout() {
+            localStorage.removeItem('userSession'); // Hapus sesi saat logout
             currentUserRole = ''; currentUserNameTerkait = '';
             document.getElementById('login-user').value = ''; document.getElementById('login-pass').value = ''; document.getElementById('login-error').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex'; document.getElementById('app-content').style.display = 'none';
@@ -461,7 +441,6 @@
                 html += '<tr>';
                 visibleCols.forEach(k => {
                     let cellVal = row[k.key] || '';
-                    // Tambahkan sistem scroll spesifik untuk link yang panjang
                     if (k.key === 'Tautan_GDoc' || k.key === 'Link_Meet') {
                         html += `<td><div class="scrollable-link"><a href="${cellVal}" target="_blank" style="color:var(--accent); text-decoration:none;">${cellVal}</a></div></td>`;
                     } else {
@@ -623,7 +602,6 @@
                 let tipeIcon = s.Tipe_Kelas === 'Online' ? '🌐 Online' : (s.Tipe_Kelas === 'Offline' ? '🏢 Offline' : '');
                 let tipeBadge = tipeIcon ? `<span style="font-size:11px; background:var(--bg-main); padding:2px 6px; border-radius:4px; margin-left:5px; border:1px solid var(--border);">${tipeIcon}</span>` : '';
                 
-                // Tambahkan elemen Link Meet dengan scroll-horizontal khusus untuk Kartu
                 let cardLinkHtml = '';
                 if (s.Link_Meet && s.Tipe_Kelas === 'Online') {
                     cardLinkHtml = `<div class="card-link-container">
@@ -721,6 +699,7 @@
             document.getElementById('tgl-pertemuan').value = todayStr; document.getElementById('reg-tgl-masuk').value = todayStr;
             const themeMode = localStorage.getItem('themeMode') || 'dark';
             document.documentElement.setAttribute('data-theme', themeMode); document.getElementById('bg-theme').value = themeMode;
+            
             fetchDatabase();
         };
 
