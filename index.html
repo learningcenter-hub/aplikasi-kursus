@@ -269,6 +269,16 @@
         let currentUserRole = ''; 
         let currentUserNameTerkait = ''; 
 
+        // Fungsi pembantu untuk memastikan URL memiliki protokol (https://)
+        function formatUrl(url) {
+            if (!url) return '';
+            let trimmed = url.trim();
+            if (!/^https?:\/\//i.test(trimmed)) {
+                return 'https://' + trimmed;
+            }
+            return trimmed;
+        }
+
         function getProgramList() {
             if(!dbSchema.template || !dbSchema.template.data) return [];
             let programs = dbSchema.template.data.map(t => {
@@ -445,7 +455,10 @@
                 html += '<tr>';
                 visibleCols.forEach(k => {
                     let cellVal = row[k.key] || '';
-                    if (k.key === 'Tautan_GDoc' || k.key === 'Link_Meet') { html += `<td><a href="${cellVal}" target="_blank" style="color:var(--accent); text-decoration:none; word-break:break-all;">${cellVal}</a></td>`; } 
+                    if (k.key === 'Tautan_GDoc' || k.key === 'Link_Meet') { 
+                        let fullUrl = formatUrl(cellVal);
+                        html += `<td><a href="${fullUrl}" target="_blank" style="color:var(--accent); text-decoration:none; word-break:break-all;">${cellVal}</a></td>`; 
+                    } 
                     else { html += `<td>${cellVal}</td>`; }
                 });
                 
@@ -593,7 +606,6 @@
                 if(valGuru !== 'Semua') jadwalToRender = jadwalToRender.filter(j => j.Guru === valGuru);
             } else { return; }
 
-            // Apply new filters: Status, Nama Siswa, ID Jadwal
             jadwalToRender = jadwalToRender.filter(j => {
                 let matchSiswa = j.Siswa ? j.Siswa.toLowerCase().includes(valSiswa) : false;
                 if(valSiswa === '') matchSiswa = true;
@@ -618,8 +630,9 @@
                 
                 let cardLinkHtml = '';
                 if (s.Link_Meet && s.Tipe_Kelas === 'Online') {
+                    let fullUrl = formatUrl(s.Link_Meet);
                     cardLinkHtml = `<div style="margin-top:8px; padding:8px; background:var(--bg-main); border:1px solid var(--border); border-radius:4px; font-size:12px; word-break:break-all;">
-                        <strong>🔗 Meet:</strong> <a href="${s.Link_Meet}" target="_blank" style="color: var(--accent); text-decoration:none;">${s.Link_Meet}</a>
+                        <strong>🔗 Meet:</strong> <a href="${fullUrl}" target="_blank" style="color: var(--accent); text-decoration:none;">${s.Link_Meet}</a>
                     </div>`;
                 }
 
@@ -659,7 +672,8 @@
                 });
                 
                 if(template && template.Tautan_GDoc) {
-                    btn.innerText = `⬇️ Download Template ${jadwal.Program}`; btn.onclick = () => window.open(template.Tautan_GDoc, '_blank');
+                    let fullUrl = formatUrl(template.Tautan_GDoc);
+                    btn.innerText = `⬇️ Download Template ${jadwal.Program}`; btn.onclick = () => window.open(fullUrl, '_blank');
                 } else {
                     btn.innerText = `Template ${jadwal.Program} Belum Tersedia`; btn.onclick = () => alert('Admin belum menambahkan link template untuk program ini di Pengaturan Data.');
                 }
