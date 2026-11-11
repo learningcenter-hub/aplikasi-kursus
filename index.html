@@ -14,7 +14,6 @@
         }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-main); color: var(--text-main); margin: 0; padding: 20px; transition: background-color 0.3s, color 0.3s; }
         
-        /* Custom Scrollbar Mini */
         ::-webkit-scrollbar { height: 6px; width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -70,7 +69,6 @@
         .settings-sidebar button { background: none; border: none; color: var(--text-muted); text-align: left; padding: 10px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         .settings-sidebar button:hover, .settings-sidebar button.active { background-color: var(--bg-card); color: var(--text-main); border-left: 3px solid var(--accent); }
         
-        /* PENGATURAN AREA KONTEN DENGAN SCROLL VERTIKAL UNTUK SEMUA SUB-BAGIAN */
         .settings-content { flex-grow: 1; background-color: var(--bg-card); padding: 20px; border-radius: 8px; min-height: 400px; }
         #setting-data-view { max-height: 60vh; overflow-y: auto; overflow-x: auto; border: 1px solid var(--border); border-radius: 4px; }
         #setting-ui-view { max-height: 60vh; overflow-y: auto; padding-right: 5px; }
@@ -90,6 +88,8 @@
         .modal-content { background-color: var(--bg-card); padding: 25px; border-radius: 8px; width: 450px; border: 1px solid var(--border); }
         .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--accent); }
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+        .filter-input { padding: 8px; border-radius: 4px; background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); font-size: 13px; font-family: inherit; }
     </style>
 </head>
 <body>
@@ -138,11 +138,19 @@
         </div>
 
         <div id="jadwal" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; background-color: var(--bg-card); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
                 <h3 style="margin: 0; color: var(--text-muted);">Daftar Jadwal Kelas</h3>
-                <div id="jadwal-filter-container" style="display: none;">
-                    <select id="filter-guru-dashboard" onchange="renderJadwal()" style="padding: 6px; border-radius: 4px; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border);">
-                        <option value="Semua">-- Tampilkan Semua Guru --</option>
+                <div id="jadwal-filter-container" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <input type="text" id="filter-id-dashboard" class="filter-input" placeholder="🔍 Cari ID Jadwal..." onkeyup="renderJadwal()" style="width: 130px;">
+                    <input type="text" id="filter-siswa-dashboard" class="filter-input" placeholder="🔍 Cari Nama Siswa..." onkeyup="renderJadwal()" style="width: 180px;">
+                    <select id="filter-status-dashboard" class="filter-input" onchange="renderJadwal()">
+                        <option value="Semua">Semua Status</option>
+                        <option value="Mendatang">Mendatang</option>
+                        <option value="Berlangsung">Berlangsung</option>
+                        <option value="Selesai">Selesai</option>
+                    </select>
+                    <select id="filter-guru-dashboard" class="filter-input" onchange="renderJadwal()">
+                        <option value="Semua">-- Semua Guru --</option>
                     </select>
                 </div>
             </div>
@@ -181,7 +189,6 @@
                     <div class="form-group"><label>Hari Kursus</label><select id="reg-hari"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option><option>Minggu</option></select></div>
                     <div class="form-group"><label>Jam Kursus</label><div class="time-group"><input type="time" id="reg-jam-mulai" value="15:00"> <span>s/d</span> <input type="time" id="reg-jam-selesai" value="16:30"></div></div>
                     <div class="form-group"><label>Tipe Kelas (On/Off)</label><select id="reg-tipe-kelas"><option>Offline</option><option>Online</option></select></div>
-                    <div class="form-group"></div>
                 </div>
                 <button class="btn-primary" style="width: 100%; margin-top: 20px;" onclick="simpanRegistrasiSiswa()">Simpan Data Siswa</button>
             </div>
@@ -297,7 +304,6 @@
                 updateDropdownLaporan(); 
                 updateDropdownProgram(); 
 
-                // MENCEGAH LOGOUT SAAT REFRESH
                 let savedSession = localStorage.getItem('userSession');
                 if (savedSession) {
                     let parsedSession = JSON.parse(savedSession);
@@ -353,9 +359,7 @@
             currentUserRole = akunObj.Role.toLowerCase();
             currentUserNameTerkait = akunObj.Nama_Terkait || '';
 
-            if (saveSession) {
-                localStorage.setItem('userSession', JSON.stringify(akunObj));
-            }
+            if (saveSession) { localStorage.setItem('userSession', JSON.stringify(akunObj)); }
 
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-content').style.display = 'block';
             const navSiswa = document.getElementById('nav-siswa'); const navPengaturan = document.getElementById('nav-pengaturan'); const userDisplay = document.getElementById('user-display');
@@ -441,11 +445,8 @@
                 html += '<tr>';
                 visibleCols.forEach(k => {
                     let cellVal = row[k.key] || '';
-                    if (k.key === 'Tautan_GDoc' || k.key === 'Link_Meet') {
-                        html += `<td><a href="${cellVal}" target="_blank" style="color:var(--accent); text-decoration:none; word-break:break-all;">${cellVal}</a></td>`;
-                    } else {
-                        html += `<td>${cellVal}</td>`;
-                    }
+                    if (k.key === 'Tautan_GDoc' || k.key === 'Link_Meet') { html += `<td><a href="${cellVal}" target="_blank" style="color:var(--accent); text-decoration:none; word-break:break-all;">${cellVal}</a></td>`; } 
+                    else { html += `<td>${cellVal}</td>`; }
                 });
                 
                 let btnDetail = '';
@@ -554,7 +555,7 @@
         function updateFilterGuru() {
             const filter = document.getElementById('filter-guru-dashboard');
             if(!filter) return;
-            filter.innerHTML = '<option value="Semua">-- Tampilkan Semua Guru --</option>';
+            filter.innerHTML = '<option value="Semua">-- Semua Guru --</option>';
             if(dbSchema.guru && dbSchema.guru.data) {
                 dbSchema.guru.data.forEach(g => {
                     if(g.Nama_Guru) filter.innerHTML += `<option value="${g.Nama_Guru}">${g.Nama_Guru}</option>`;
@@ -575,23 +576,36 @@
             
             let ui = dbSchema.tampilan.data[0] || {};
             let aksesGuru = ui.Akses_Jadwal || 'Semua';
-            let filterDropdown = document.getElementById('filter-guru-dashboard').value;
-            let filterContainer = document.getElementById('jadwal-filter-container');
+            
+            let filterGuruDropdown = document.getElementById('filter-guru-dashboard');
+            let valGuru = filterGuruDropdown.value;
+            let valStatus = document.getElementById('filter-status-dashboard').value;
+            let valSiswa = document.getElementById('filter-siswa-dashboard').value.toLowerCase();
+            let valID = document.getElementById('filter-id-dashboard').value.toLowerCase();
 
             let jadwalToRender = dbSchema.jadwal.data;
 
-            if (currentUserRole === 'guru') {
-                if (aksesGuru === 'Pribadi') {
-                    jadwalToRender = jadwalToRender.filter(j => j.Guru === currentUserNameTerkait);
-                    filterContainer.style.display = 'none'; 
-                } else {
-                    filterContainer.style.display = 'block';
-                    if(filterDropdown !== 'Semua') jadwalToRender = jadwalToRender.filter(j => j.Guru === filterDropdown);
-                }
-            } else if (currentUserRole === 'admin') {
-                filterContainer.style.display = 'block';
-                if(filterDropdown !== 'Semua') jadwalToRender = jadwalToRender.filter(j => j.Guru === filterDropdown);
+            if (currentUserRole === 'guru' && aksesGuru === 'Pribadi') {
+                filterGuruDropdown.style.display = 'none';
+                jadwalToRender = jadwalToRender.filter(j => j.Guru === currentUserNameTerkait);
+            } else if (currentUserRole === 'guru' || currentUserRole === 'admin') {
+                filterGuruDropdown.style.display = 'inline-block';
+                if(valGuru !== 'Semua') jadwalToRender = jadwalToRender.filter(j => j.Guru === valGuru);
             } else { return; }
+
+            // Apply new filters: Status, Nama Siswa, ID Jadwal
+            jadwalToRender = jadwalToRender.filter(j => {
+                let matchSiswa = j.Siswa ? j.Siswa.toLowerCase().includes(valSiswa) : false;
+                if(valSiswa === '') matchSiswa = true;
+
+                let matchID = j.ID_Jadwal ? j.ID_Jadwal.toLowerCase().includes(valID) : false;
+                if(valID === '') matchID = true;
+
+                let statusObj = checkStatus(j.Tanggal, j.Jam_Mulai, j.Jam_Selesai);
+                let matchStatus = (valStatus === 'Semua') || (statusObj.label === valStatus);
+
+                return matchSiswa && matchID && matchStatus;
+            });
 
             if(jadwalToRender.length === 0) { 
                 container.innerHTML = '<p style="color:var(--text-muted);">Tidak ada jadwal untuk kriteria ini.</p>'; return; 
